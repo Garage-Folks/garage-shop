@@ -1,0 +1,41 @@
+﻿<MudCard>
+    <MudCardMedia Image=@Img />
+    <MudCardContent>
+        <MudText Typo="Typo.h6">Brand: @Brand</MudText>
+        <MudText Typo="Typo.h6">Name: @Name</MudText>
+    </MudCardContent>
+    <MudCardContent>
+        <MudElement Style="font-weight:bold; font-size:medium;">Notes:</MudElement>
+        <MudText Typo="Typo.body2">@Notes</MudText>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public string? Img { get; set; }
+
+    [Parameter]
+    public string? Brand { get; set; }
+
+    [Parameter]
+    public string? Name { get; set; }
+
+    [Parameter]
+    public string? Notes { get; set; }
+
+    public DetailedItemCard()
+    {
+        this.Img = "https://www.bobobird.com/wp-content/uploads/2021/02/Couple-with-One-Kid-Wood-Sculpture-Couple-Wooden-Carving-Gifts-Home-Decor_2.jpg";
+        this.Brand = "Example Brand";
+        this.Name = "Example Name";
+        this.Notes = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+    }
+
+    public DetailedItemCard(string Img, string Brand, string Name, string Notes)
+    {
+        this.Img = Img;
+        this.Brand = Brand;
+        this.Name = Name;
+        this.Notes = Notes;
+    }
+}
