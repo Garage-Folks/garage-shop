@@ -1,0 +1,56 @@
+﻿@page "/addBrand"
+@using FineWoodworkingBasic.Service
+@using FineWoodworkingBasic.Model
+@inject AddBrandService svc
+@inject AllStateInfoService FullState
+
+<PageTitle>Add a Brand</PageTitle>
+
+
+
+<h1>Please Enter a New Brand</h1>
+
+<div class="form-group row">
+    <label for="brandName" class="col-sm-2 col-form-label">Brand Name</label>
+    <div class="col-sm-10">
+        <input type="text" id="brandName" class="form-control" placeholder="Brand Name" @bind="@bName" @oninput="SetBName" />
+    </div>
+</div>
+<div class="form-group row">
+    <label for="brandNotes" class="col-sm-2 col-form-label">Brand Notes</label>
+    <div class="col-sm-10">
+        <input type="text" id="brandNotes" class="form-control" placeholder="Brand Notes" @bind="@bNotes" @oninput="SetBNotes" />
+    </div>
+</div>
+
+<button class="btn btn-primary" @onclick="AddBrandAction">Add Brand</button>
+<div class="@CssClass">
+    <p role="status">Status: @addBrandMessage </p>
+</div>
+
+
+
+@code {
+    private string addBrandMessage { get; set; }
+    private string bName { get; set; }
+    private string bNotes { get; set; }
+
+    public string CssClass { get; set; }
+
+    private void SetBName(ChangeEventArgs changeEvent)
+    {
+        bName = (string)changeEvent.Value;
+    }
+
+    private void SetBNotes(ChangeEventArgs changeEvent)
+    {
+        bNotes = (string)changeEvent.Value;
+    }
+
+    private async void AddBrandAction()
+    {
+        ResultMessage mesg = await svc.AddBrandAsync(FullState.currentStateInfo, bName, bNotes);
+        addBrandMessage = mesg.Message;
+
+    }
+}

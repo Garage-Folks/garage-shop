@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+@inject IDialogService DialogService
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@* Broke the background image but I'm looking into it *@
+<div style="height: 100vh !important; width: 100vh !important; background-image: url(eric3.png) !important" />
+
+<MudAppBar Color="Color.Transparent" Elevation="0">
+    <MudButton Href="private" StartIcon="@garage" IconColor="Color.Tertiary" DisableElevation="true">
+        <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Garage Shop Woodworking</MudText>
+        </MudButton>
+    <MudSpacer />
+    <MudSpacer />
+
+    <MudStack Row="true">
+        <MudNavLink Href="/portfolio" Match="NavLinkMatch.Prefix">
+            <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Portfolio</MudText>
+        </MudNavLink>
+        <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">
+            <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">About</MudText>
+        </MudNavLink>
+        <MudIconButton OnClick="OpenDialog" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
+    </MudStack>
+</MudAppBar>
+
+
+@code {
+    private void OpenDialog()
+    {
+        Console.WriteLine("Button Clicked");
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
+        DialogService.Show<Dialog>("Please Enter Username and Password", closeOnEscapeKey);
+    }
+
+
+    #region Icons
+    const string garage =
+    @"<svg xmlns=""http://www.w3.org/2000/svg"" height=""1em"" viewBox=""0 0 640 512""><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d=""M0 488V171.3c0-26.2 15.9-49.7 40.2-59.4L308.1 4.8c7.6-3.1 16.1-3.1 23.8 0L599.8 111.9c24.3 9.7 40.2 33.3 40.2 59.4V488c0 13.3-10.7 24-24 24H568c-13.3 0-24-10.7-24-24V224c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32V488c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24zm488 24l-336 0c-13.3 0-24-10.7-24-24V432H512l0 56c0 13.3-10.7 24-24 24zM128 400V336H512v64H128zm0-96V224H512l0 80H128z"" /></svg>";
+
+    #endregion
+}
