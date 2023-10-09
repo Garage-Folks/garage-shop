@@ -1,48 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="@_currentTheme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudSpacer />
-            <MudButton Href="/" StartIcon="@garage" IconColor="Color.Tertiary" DisableElevation="true" >
-            @*<MudButton Href="private" StartIcon="@garage" IconColor="Color.Tertiary" DisableElevation="true">*@
-                <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Garage Shop Woodworking - Private</MudText>
-            </MudButton>
-        <MudSpacer />
-        <MudSpacer />
-        <MudSpacer />
-        <MudIconButton Href="" Icon="@Icons.Material.TwoTone.Logout" Color="Color.Tertiary" />
-        </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">Navigation</MudText>
-        </MudDrawerHeader>
-        <MudDivider DividerType="DividerType.Middle"/>
-        <PrivateNavMenu />
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+@Body
 
+@code 
+{
+    private readonly MudTheme _currentTheme = new()
+        {
+            Palette = new PaletteLight
+            {
+                Primary = "#67597A",
+                Secondary = "#533F28",
+                Info = "#64a7e2",
+                Success = "#2ECC40",
+                Warning = "#FFC107",
+                Error = "#FF0000",
+                AppbarBackground = "#A87F4D",
+                TextPrimary = "#0A7BCF",
+                TextSecondary = "#4CAF50",
+                // more color properties
+            }
+        };
 
-@code {
-    bool _drawerOpen = true;
-
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
-
-    #region Icons
-    const string garage =
-    @"<svg xmlns=""http://www.w3.org/2000/svg"" height=""1em"" viewBox=""0 0 640 512""><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d=""M0 488V171.3c0-26.2 15.9-49.7 40.2-59.4L308.1 4.8c7.6-3.1 16.1-3.1 23.8 0L599.8 111.9c24.3 9.7 40.2 33.3 40.2 59.4V488c0 13.3-10.7 24-24 24H568c-13.3 0-24-10.7-24-24V224c0-17.7-14.3-32-32-32H128c-17.7 0-32 14.3-32 32V488c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24zm488 24l-336 0c-13.3 0-24-10.7-24-24V432H512l0 56c0 13.3-10.7 24-24 24zM128 400V336H512v64H128zm0-96V224H512l0 80H128z"" /></svg>";
-
-    #endregion
 }
