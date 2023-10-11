@@ -1,15 +1,15 @@
 ﻿@using System.Text.RegularExpressions;
 @using System.ComponentModel.DataAnnotations;
 
-<MudPaper Class="pa-4 align-items-center">
-    <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors" Class="align-item-center pa-4">
-        <MudText Typo="Typo.h3">Login,</MudText>
+<MudPaper Class="pa-5" Elevation="4" style="border-radius: 30px 0px 30px 30px">
+    <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
+        <MudText Typo="Typo.h1" Class="justify-center" Style="font-size: 25px; font-weight: bold; left: 100px">Login,</MudText>
 
         <MudTextField
             T = "string"
             Label="Email"
             Class="mb-2"
-            Style="width: 400px;"
+            Style="width: 300px;"
             Variant="Variant.Text"
             Adornment="Adornment.End"
             AdornmentIcon="@EmailIcon"
@@ -22,7 +22,7 @@
             @ref="PasswordField1"
             Label="Password"
             Class="mb-2"
-            Style="width: 400px;"
+            Style="width: 300px;"
             Variant="Variant.Text"
             InputType="@PasswordInput"
             Adornment="Adornment.End"
@@ -35,18 +35,21 @@
 
 
         <MudButton 
-            OnClick="Submit" 
+            OnClick="Submit"
             Variant="Variant.Outlined" 
+            Style="left: 125px; broder-radius: 30px;"
+            Class="mt-3 rounded-30"
             Color="Color.Primary" 
             Disabled="@(!Success)">
-        Login
+            Login
         </MudButton>
 
     </MudForm>
 </MudPaper>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public EventCallback<string> OnClick {get; set;}
     MudForm Form;
     bool Success;
     string[] Errors = {};
@@ -80,5 +83,8 @@
         }
     }
 
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Submit()
+    {
+        OnClick.InvokeAsync();
+    }
 }
