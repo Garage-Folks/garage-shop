@@ -1,0 +1,84 @@
+﻿@using System.Text.RegularExpressions;
+@using System.ComponentModel.DataAnnotations;
+
+<MudPaper Class="pa-4 align-items-center">
+    <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors" Class="align-item-center pa-4">
+        <MudText Typo="Typo.h3">Login,</MudText>
+
+        <MudTextField
+            T = "string"
+            Label="Email"
+            Class="mb-2"
+            Style="width: 400px;"
+            Variant="Variant.Text"
+            Adornment="Adornment.End"
+            AdornmentIcon="@EmailIcon"
+            Required="true"
+            RequiredError="Must have an email!">
+        </MudTextField>
+
+        <MudTextField
+            T = "string"
+            @ref="PasswordField1"
+            Label="Password"
+            Class="mb-2"
+            Style="width: 400px;"
+            Variant="Variant.Text"
+            InputType="@PasswordInput"
+            Adornment="Adornment.End"
+            AdornmentIcon="@PasswordInputIcon"
+            OnAdornmentClick="ShowPassword"
+            AdornmentAriaLabel="Show Password"
+            Required="true"
+            RequiredError="Must have an password">
+        </MudTextField>
+
+
+        <MudButton 
+            OnClick="Submit" 
+            Variant="Variant.Outlined" 
+            Color="Color.Primary" 
+            Disabled="@(!Success)">
+        Login
+        </MudButton>
+
+    </MudForm>
+</MudPaper>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    MudForm Form;
+    bool Success;
+    string[] Errors = {};
+
+
+    // Email
+    string EmailIcon = Icons.Material.Filled.Email;
+
+
+    // Password
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    InputType PasswordInput = InputType.Password;
+    MudTextField<string> PasswordField1;
+    bool isShow;
+
+
+    // Show password on click of icon
+    void ShowPassword()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+}

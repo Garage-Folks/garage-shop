@@ -26,13 +26,19 @@
     </MudStack>
 </MudAppBar>
 
+<style>
+    .blur{
+        backdrop-filter: blur(10px);
+    }
+</style>
+
 
 @code {
     private void OpenDialog()
     {
-        Console.WriteLine("Button Clicked");
-        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
-        DialogService.Show<Dialog>("Please Enter Username and Password", closeOnEscapeKey);
+
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, ClassBackground = "blur", CloseButton=true, NoHeader = true };
+        DialogService.Show<Login>("", closeOnEscapeKey);
     }
 
 
