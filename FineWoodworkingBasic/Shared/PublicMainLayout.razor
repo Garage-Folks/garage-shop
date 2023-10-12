@@ -47,8 +47,7 @@
         </MudNavLink>
 
         <MudIconButton OnClick="@ToggleOpen" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
-        <MudPopover 
-            @ref="@Popover" 
+        <MudPopover
             Open="isOpen" 
             OverflowBehavior="OverflowBehavior.FlipAlways" 
             AnchorOrigin="Origin.BottomRight" 
@@ -61,15 +60,9 @@
     </MudStack>
 </MudAppBar>
 
-<script>
-    window.onclick = function(event) {
-        
-    }
-</script>
 
 
 @code {
-    MudPopover Popover;
 
     public bool isOpen = false;
 
