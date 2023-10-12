@@ -1,0 +1,27 @@
+<MudPaper Class="pa-5 justify-center" Elevation="4" style="border-radius: 20px 0px 20px 20px">
+    <MudText 
+        Class="mb-2">
+        Would you like to log out?
+    </MudText>
+    <MudButton 
+        Style="left: 50px;" 
+        Variant="Variant.Outlined" 
+        Color="Color.Error" 
+        nClick="@Submit">
+        Log Out
+    </MudButton>
+</MudPaper>
+
+
+@code{
+    [Parameter] public EventCallback<string> CloseOverlay {get; set;}
+    [Parameter] public EventCallback<string> LoggedOut {get; set;}
+
+    public void Submit()
+    {
+        // Simple way of handling the logout
+        LoggedOut.InvokeAsync();
+        CloseOverlay.InvokeAsync();
+    }
+    
+}

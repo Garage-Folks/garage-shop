@@ -48,7 +48,8 @@
 
 @code {
 
-    [Parameter] public EventCallback<string> OnClick {get; set;}
+    [Parameter] public EventCallback<string> CloseOverlay {get; set;}
+    [Parameter] public EventCallback<string> LoggedIn {get; set;}
     MudForm Form;
     bool Success;
     string[] Errors = {};
@@ -85,6 +86,8 @@
 
     void Submit()
     {
-        OnClick.InvokeAsync();
+        // Needs verification for login
+        LoggedIn.InvokeAsync();
+        CloseOverlay.InvokeAsync();
     }
 }

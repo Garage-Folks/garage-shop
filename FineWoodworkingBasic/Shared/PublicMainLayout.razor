@@ -1,6 +1,7 @@
 ﻿@inherits MainLayout
 @inject IDialogService DialogService
 
+
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -46,7 +47,9 @@
                 </MudText>
         </MudNavLink>
 
-        <MudIconButton OnClick="@ToggleOpen" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
+        <MudIconButton OnClick="@ToggleOverlay" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
+
+        @if (!isLoggedIn){
         <MudPopover
             Open="isOpen" 
             OverflowBehavior="OverflowBehavior.FlipAlways" 
@@ -54,8 +57,20 @@
             TransformOrigin="Origin.TopRight" 
             Paper="false" 
             Duration="300">
-            <Login OnClick="@ToggleOpen"/>
+            <Login CloseOverlay="@ToggleOverlay" LoggedIn="@ToggleLogin"/>
         </MudPopover>
+        }
+        else{
+        <MudPopover
+            Open="isOpen" 
+            OverflowBehavior="OverflowBehavior.FlipAlways" 
+            AnchorOrigin="Origin.BottomRight" 
+            TransformOrigin="Origin.TopRight" 
+            Paper="false" 
+            Duration="300">
+            <Logout LoggedOut="@ToggleLogin" CloseOverlay="@ToggleOverlay"></Logout>
+        </MudPopover>
+        }
         
     </MudStack>
 </MudAppBar>
@@ -65,13 +80,17 @@
 @code {
 
     public bool isOpen = false;
+    private bool isLoggedIn = true;
 
-    public void ToggleOpen()
+    public void ToggleOverlay()
     {
-        if (isOpen)
-            isOpen = false;
-        else
-            isOpen = true;
+        if (isOpen) isOpen = false;
+        else isOpen = true;
+    }
+
+    public void ToggleLogin(){
+        if (isLoggedIn) isLoggedIn = false;
+        else isLoggedIn = true;
     }
 
     #region Icons
