@@ -9,31 +9,63 @@
 <div style="height: 100vh !important; width: 100vh !important; background-image: url(eric3.png) !important" />
 
 <MudAppBar Color="Color.Transparent" Elevation="0">
-    <MudButton Href="private" StartIcon="@garage" IconColor="Color.Tertiary" DisableElevation="true">
-        <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Garage Shop Woodworking</MudText>
+    <MudButton 
+        Href="private" 
+        StartIcon="@garage" 
+        IconColor="Color.Tertiary" 
+        DisableElevation="true">
+        <MudText 
+            Typo="Typo.h6" 
+            Class="px-4" 
+            Align="Align.Center" 
+            Color="Color.Inherit">
+            Garage Shop Woodworking
+            </MudText>
         </MudButton>
     <MudSpacer />
     <MudSpacer />
 
     <MudStack Row="true">
         <MudNavLink Href="/portfolio" Match="NavLinkMatch.Prefix">
-            <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Portfolio</MudText>
+            <MudText 
+                Typo="Typo.h6" 
+                Class="px-4" 
+                Align="Align.Center" 
+                Color="Color.Inherit">
+                Portfolio
+                </MudText>
         </MudNavLink>
+
         <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">
-            <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">About</MudText>
+            <MudText 
+                Typo="Typo.h6" 
+                Class="px-4" 
+                Align="Align.Center" 
+                Color="Color.Inherit">
+                About
+                </MudText>
         </MudNavLink>
+
         <MudIconButton OnClick="@ToggleOpen" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
-        <MudPopover @ref="@Popover" Open="isOpen" OverflowBehavior="OverflowBehavior.FlipAlways" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Paper="false" Duration="300">
-            <Login OnClick="@ToggleOpen"></Login>
+        <MudPopover 
+            @ref="@Popover" 
+            Open="isOpen" 
+            OverflowBehavior="OverflowBehavior.FlipAlways" 
+            AnchorOrigin="Origin.BottomRight" 
+            TransformOrigin="Origin.TopRight" 
+            Paper="false" 
+            Duration="300">
+            <Login OnClick="@ToggleOpen"/>
         </MudPopover>
+        
     </MudStack>
 </MudAppBar>
 
-<style>
-    .blur{
-        backdrop-filter: blur(10px);
+<script>
+    window.onclick = function(event) {
+        
     }
-</style>
+</script>
 
 
 @code {
@@ -48,15 +80,6 @@
         else
             isOpen = true;
     }
-
-
-    private void OpenDialog()
-    {
-
-        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, ClassBackground = "blur", CloseButton=true};
-        DialogService.Show<Login>("", closeOnEscapeKey);
-    }
-
 
     #region Icons
     const string garage =
