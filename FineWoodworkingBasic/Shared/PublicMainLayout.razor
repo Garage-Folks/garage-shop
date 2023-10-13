@@ -49,27 +49,41 @@
 
         <MudIconButton OnClick="@ToggleOverlay" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
 
-        @if (!isLoggedIn){
-        <MudPopover
-            Open="isOpen" 
-            OverflowBehavior="OverflowBehavior.FlipAlways" 
-            AnchorOrigin="Origin.BottomRight" 
-            TransformOrigin="Origin.TopRight" 
-            Paper="false" 
-            Duration="300">
-            <Login CloseOverlay="@ToggleOverlay" LoggedIn="@ToggleLogin"/>
-        </MudPopover>
+        @if (!IsLoggedIn)
+        {
+            <MudPopover
+                Open="IsOpen" 
+                OverflowBehavior="OverflowBehavior.FlipAlways" 
+                AnchorOrigin="Origin.BottomRight" 
+                TransformOrigin="Origin.TopRight" 
+                Paper="false" 
+                Duration="300">
+                <Login CloseOverlay="ToggleOverlay" LoggedIn="ToggleLogin" ToggleRegisterView="ToggleRegister"/>
+            </MudPopover>
         }
-        else{
-        <MudPopover
-            Open="isOpen" 
-            OverflowBehavior="OverflowBehavior.FlipAlways" 
-            AnchorOrigin="Origin.BottomRight" 
-            TransformOrigin="Origin.TopRight" 
-            Paper="false" 
-            Duration="300">
-            <Logout LoggedOut="@ToggleLogin" CloseOverlay="@ToggleOverlay"></Logout>
-        </MudPopover>
+        @if (NeedsRegister)
+        {
+            <MudPopover
+                Open="IsOpen" 
+                OverflowBehavior="OverflowBehavior.FlipAlways" 
+                AnchorOrigin="Origin.BottomRight" 
+                TransformOrigin="Origin.TopRight" 
+                Paper="false" 
+                Duration="300">
+                <Register ToggleRegisterView="ToggleRegister" LoggedIn="ToggleLogin" CloseOverlay="ToggleOverlay"/>
+            </MudPopover>
+        }
+        @if (IsLoggedIn)
+        {
+            <MudPopover
+                Open="IsOpen" 
+                OverflowBehavior="OverflowBehavior.FlipAlways" 
+                AnchorOrigin="Origin.BottomRight" 
+                TransformOrigin="Origin.TopRight"
+                Paper="false"
+                Duration="300">
+                <Logout  LoggedOut="ToggleLogin" CloseOverlay="ToggleOverlay" />
+            </MudPopover>
         }
         
     </MudStack>
@@ -79,18 +93,30 @@
 
 @code {
 
-    public bool isOpen = false;
-    private bool isLoggedIn = true;
+    public bool IsOpen = false;
+    private bool IsLoggedIn = false;
+    private bool NeedsRegister = false;
 
+    // Shows the overlay
     public void ToggleOverlay()
     {
-        if (isOpen) isOpen = false;
-        else isOpen = true;
+        if (IsOpen) IsOpen = false;
+        else 
+        {
+            IsOpen = true;
+            NeedsRegister = false;
+        }
     }
 
+    // Toggle for when a user is logged in or not
     public void ToggleLogin(){
-        if (isLoggedIn) isLoggedIn = false;
-        else isLoggedIn = true;
+        if (IsLoggedIn) IsLoggedIn = false;
+        else IsLoggedIn = true;
+    }
+
+    public void ToggleRegister()
+    {
+        NeedsRegister = true;
     }
 
     #region Icons
