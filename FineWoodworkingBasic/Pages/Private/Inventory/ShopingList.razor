@@ -1,0 +1,28 @@
+@page "/Private/Inventory/Shopping-List"
+
+<MudGrid>
+<MudItem xs="6">
+    <Filter/>
+</MudItem>
+<MudItem xs="6">
+    <MudText Style="display: inline-block">Shopping Cart</MudText>
+</MudItem>
+</MudGrid>
+<MudGrid style="border-radius: 30px">
+    @for (int i=0; i < 10; i++)
+    {
+        string item = string.Format("item {0}", i);
+        var rand = new Random();
+    <MudItem xs="4">
+            <ShoppingListItem ItemQuantity="rand.Next(1,11)" ItemName="@item"/>
+    </MudItem>  
+    }
+
+</MudGrid>
+
+
+
+@code
+{
+
+}
