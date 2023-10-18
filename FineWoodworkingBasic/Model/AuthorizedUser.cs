@@ -9,8 +9,8 @@ namespace FineWoodworkingBasic.Model
     public class AuthorizedUser : Persistable
     {
         protected int? ID { get; set; }
-        protected string userName { get; set; }
-        protected string password { get; set; }
+        public string userName { get; set; }
+        public string password { get; set; }
 
         public AuthorizedUser()
         {

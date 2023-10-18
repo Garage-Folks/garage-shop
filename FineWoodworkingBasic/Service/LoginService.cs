@@ -5,6 +5,7 @@ namespace FineWoodworkingBasic.Service
 {
     public class LoginService
     {
+        public bool IsLoggedIn = false;
         public Task<ResultMessage> LoginAsync(Dictionary<string, object> stateInfo, string username, string password)
         {
             return Task.FromResult(LoginAsyncHelper(stateInfo, username, password));   
@@ -23,6 +24,7 @@ namespace FineWoodworkingBasic.Service
                 {
                     loginMessage = "Login successful!";
                     stateInfo["userName"] = uname;
+                    IsLoggedIn = true;
                     return new ResultMessage(ResultMessage.ResultMessageType.Success, loginMessage);
                 }
                 else
@@ -52,6 +54,9 @@ namespace FineWoodworkingBasic.Service
 
         }
 
-    
+        public bool isLoggedIn()
+        {
+            return IsLoggedIn;
+        }
     }
 }

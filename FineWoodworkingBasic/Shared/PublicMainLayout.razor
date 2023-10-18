@@ -1,6 +1,14 @@
 ﻿@inherits MainLayout
 @inject IDialogService DialogService
 
+<AuthorizeView>
+    <NotAuthorized>
+        <p>You're not logged in</p>
+    </NotAuthorized>
+    <Authorized>
+        <p>You're logged in</p>
+    </Authorized>
+</AuthorizeView>
 
 <MudThemeProvider />
 <MudDialogProvider />

@@ -1,4 +1,10 @@
 ﻿
+@using FineWoodworkingBasic.Model;
+@using FineWoodworkingBasic.Service;
+@inject LoginService loginService;
+@inject AllStateInfoService fullState;
+@inject AuthenticationStateProvider authStateProvider;
+
 <MudPaper Class="pa-5" Elevation="4" style="border-radius: 20px 0px 20px 20px">
     <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
         <MudText Typo="Typo.h1" Style="font-size: 25px; font-weight:" Align="Align.Center">Login</MudText>
@@ -13,7 +19,8 @@
             Adornment="Adornment.End"
             AdornmentIcon="@EmailIcon"
             Required="true"
-            RequiredError="Must have an email!"/>
+            RequiredError="Must have an email!"
+            @bind-Value="email"/>
 
         <MudTextField
             T = "string"
@@ -28,8 +35,8 @@
             OnAdornmentClick="ShowPassword"
             AdornmentAriaLabel="Show Password"
             Required="true"
-            RequiredError="Must have an password"/>
-
+            RequiredError="Must have an password"
+            @bind-Value="password"/>
 
         <MudButton 
             OnClick="Submit"
@@ -61,6 +68,10 @@
 
 @code
 {
+    //private AuthorizedUser authorizedUser = new AuthorizedUser();
+
+    private string? email { get; set; }
+    private string? password { get; set; }
 
     MudForm Form;
     bool Success;
@@ -102,11 +113,13 @@
         }
     }
 
-    void Submit()
+    async void Submit()
     {
         // Needs verification for login
-        LoggedIn.InvokeAsync();
-        CloseOverlay.InvokeAsync();
+        await LoggedIn.InvokeAsync();
+        await CloseOverlay.InvokeAsync();
+        await loginService.LoginAsync(fullState.currentStateInfo, email, password);
+        await authStateProvider.GetAuthenticationStateAsync();
     }
 
     void SwitchToRegister()
