@@ -1,0 +1,78 @@
+@page "/Private/Inventory/Shopping-List"
+
+<MudGrid>
+<MudItem xs="5">
+    <MudPaper Elevation="0" Class="d-flex flex-column align-left justify-end mud-width-full py-8">
+        <Filter/>
+    </MudPaper>
+</MudItem>
+<MudItem xs="6">
+    <MudPaper Elevation="0" Class="d-flex flex-column align-left justify-end mud-width-full py-8">
+       <MudText Typo="Typo.h3" Style="font-size: 40px;">Shopping Cart</MudText>
+    </MudPaper>
+</MudItem>
+<MudItem xs="1">
+    <MudPaper Elevation="0" Class="d-flex flex-column align-end justify-end mud-width-full py-8">
+        <MudIconButton Icon="@ItemViewIcon" OnClick="@ToggleGridView"/>
+    </MudPaper>
+</MudItem>
+</MudGrid>
+@if (GridView)
+{
+    <MudGrid style="border-radius: 30px">
+        @for (int i=0; i < 10; i++)
+        {
+            string item = string.Format("item {0}", i);
+            var rand = new Random();
+            <MudItem xs="4">
+                    <ShoppingListGridItem ItemQuantity="rand.Next(1,11)" ItemName="@item"/>
+            </MudItem>  
+        }
+
+    </MudGrid>
+}
+else
+{
+    <MudGrid style="border-radius: 15px">
+        @for (int i=0; i < 10; i++)
+        {
+            string item = string.Format("item {0}", i);
+            var rand = new Random();
+            <MudItem xs="12">
+                <ShoppingListHamburgerItem ItemQuantity="rand.Next(1,11)" ItemName="@item"/>
+            </MudItem>  
+        }
+
+    </MudGrid>
+}
+
+
+
+
+@code
+{
+    string ItemViewIcon = Icons.Material.Filled.ViewHeadline;
+    bool GridView = true;
+
+
+    void ToggleGridView()
+    {
+        if (GridView)
+        {
+             GridView = false;
+            ItemViewIcon = Icons.Material.Filled.GridView;
+            StateHasChanged();
+        }
+        else
+        {
+            GridView = true;
+            ItemViewIcon = Icons.Material.Filled.ViewHeadline;
+            StateHasChanged();
+        }
+
+    }
+
+
+
+
+}
