@@ -1,5 +1,6 @@
 @using System.Text.RegularExpressions;
 @using System.ComponentModel.DataAnnotations;
+@using Service;
 
 
 <MudPaper Class="pa-5" Elevation="4" style="border-radius: 20px 0px 20px 20px">
@@ -64,9 +65,10 @@
 </MudPaper>
 
 @code {
-    [Parameter] public EventCallback<string> ToggleRegisterView {get; set;}
-    [Parameter] public EventCallback<string> LoggedIn {get; set;}
-    [Parameter] public EventCallback<string> CloseOverlay {get; set;}
+
+    AccountLogin login = new AccountLogin();
+    [Parameter] public EventCallback<string> ParentUpdate {get; set;}
+
     MudForm Form;
     bool Success;
     string[] Errors = {};
@@ -139,8 +141,9 @@
 
     void Submit() 
     {
-        LoggedIn.InvokeAsync();
-        CloseOverlay.InvokeAsync();
+        login.ToggleLoggedIn(true);
+        login.ToggleOverlay();
+        ParentUpdate.InvokeAsync();
         
     }
 }

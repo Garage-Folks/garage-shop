@@ -1,5 +1,9 @@
 ﻿@inherits MainLayout
 
+@inject NavigationManager NavManager
+
+@using Service;
+
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -29,7 +33,17 @@
         <MudSpacer />
         <MudSpacer />
         <MudSpacer />
-        <MudIconButton Href="" Icon="@Icons.Material.TwoTone.Logout" Color="Color.Tertiary" />
+        <MudIconButton Icon="@Icons.Material.TwoTone.Logout" Color="Color.Tertiary" OnClick="ToggleOverlay" />
+            <MudPopover
+                Open="login.IsOverlayOpen()" 
+                Class="my-1"
+                OverflowBehavior="OverflowBehavior.FlipAlways" 
+                AnchorOrigin="Origin.BottomRight" 
+                TransformOrigin="Origin.TopRight"
+                Paper="false"
+                Duration="300">
+                <Logout ParentUpdate="UpdateParent"/>
+            </MudPopover>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
         <MudDrawerHeader>
@@ -47,7 +61,19 @@
 
 
 @code {
+
+    AccountLogin login = new AccountLogin();
     bool _drawerOpen = true;
+
+    void ToggleOverlay()
+    {
+        login.ToggleOverlay();
+    }
+
+    public void UpdateParent(){
+        NavManager.NavigateTo(login.GetLinkAddress());
+        StateHasChanged();
+    }
 
     void DrawerToggle()
     {

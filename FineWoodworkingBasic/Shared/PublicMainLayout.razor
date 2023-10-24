@@ -1,5 +1,6 @@
 ﻿@inherits MainLayout
 @inject IDialogService DialogService
+@using Service
 
 
 <MudThemeProvider />
@@ -49,42 +50,7 @@
 
         <MudIconButton OnClick="@ToggleOverlay" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
 
-        @if (!IsLoggedIn)
-        {
-            <MudPopover
-                Open="IsOpen" 
-                OverflowBehavior="OverflowBehavior.FlipAlways" 
-                AnchorOrigin="Origin.BottomRight" 
-                TransformOrigin="Origin.TopRight" 
-                Paper="false" 
-                Duration="300">
-                <Login CloseOverlay="ToggleOverlay" LoggedIn="ToggleLogin" ToggleRegisterView="ToggleRegister"/>
-            </MudPopover>
-        }
-        @if (NeedsRegister)
-        {
-            <MudPopover
-                Open="IsOpen" 
-                OverflowBehavior="OverflowBehavior.FlipAlways" 
-                AnchorOrigin="Origin.BottomRight" 
-                TransformOrigin="Origin.TopRight" 
-                Paper="false" 
-                Duration="300">
-                <Register ToggleRegisterView="ToggleRegister" LoggedIn="ToggleLogin" CloseOverlay="ToggleOverlay"/>
-            </MudPopover>
-        }
-        @if (IsLoggedIn)
-        {
-            <MudPopover
-                Open="IsOpen" 
-                OverflowBehavior="OverflowBehavior.FlipAlways" 
-                AnchorOrigin="Origin.BottomRight" 
-                TransformOrigin="Origin.TopRight"
-                Paper="false"
-                Duration="300">
-                <Logout  LoggedOut="ToggleLogin" CloseOverlay="ToggleOverlay" />
-            </MudPopover>
-        }
+        <LoginServiceView Sender="UpdateParent"/>
         
     </MudStack>
 </MudAppBar>
@@ -93,30 +59,17 @@
 
 @code {
 
-    public bool IsOpen = false;
-    private bool IsLoggedIn = false;
-    private bool NeedsRegister = false;
+    AccountLogin login = new AccountLogin();
 
+    public void UpdateParent(){
+        StateHasChanged();
+    }
     // Shows the overlay
     public void ToggleOverlay()
     {
-        if (IsOpen) IsOpen = false;
-        else 
-        {
-            IsOpen = true;
-            NeedsRegister = false;
-        }
-    }
-
-    // Toggle for when a user is logged in or not
-    public void ToggleLogin(){
-        if (IsLoggedIn) IsLoggedIn = false;
-        else IsLoggedIn = true;
-    }
-
-    public void ToggleRegister()
-    {
-        NeedsRegister = true;
+        login.ToggleOverlay();
+        if(login.NeedsRegister()) login.ToggleRegister();
+        StateHasChanged();
     }
 
     #region Icons
