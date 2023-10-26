@@ -1,4 +1,6 @@
-﻿
+﻿@using Service
+
+
 <MudPaper Class="pa-5" Elevation="4" style="border-radius: 20px 0px 20px 20px">
     <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
         <MudText Typo="Typo.h1" Style="font-size: 25px; font-weight:" Align="Align.Center">Login</MudText>
@@ -66,11 +68,9 @@
     bool Success;
     string[] Errors = {};
 
-    [Parameter] public EventCallback<string> CloseOverlay {get; set;}
-    [Parameter] public EventCallback<string> LoggedIn {get; set;}
-    [Parameter] public EventCallback<string> ToggleRegisterView {get; set;}
+    AccountLogin login = new AccountLogin();
 
-
+    [Parameter] public EventCallback<string> ParentUpdate {get; set;}
 
     // Email
     MudTextField<string> EmailField;
@@ -105,13 +105,15 @@
     void Submit()
     {
         // Needs verification for login
-        LoggedIn.InvokeAsync();
-        CloseOverlay.InvokeAsync();
+        login.ToggleOverlay();
+        login.ToggleLoggedIn(true);
+        ParentUpdate.InvokeAsync();
     }
 
     void SwitchToRegister()
     {
         // Needs register and login functionallity
-        ToggleRegisterView.InvokeAsync();
+        login.ToggleRegister();
+        ParentUpdate.InvokeAsync();
     }
 }
