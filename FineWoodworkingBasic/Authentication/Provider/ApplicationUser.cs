@@ -6,8 +6,10 @@ namespace FineWoodworkingBasic.Authentication.Provider
     public class ApplicationUser : IdentityUser
     {
         public int? Id { get; set; }
-        public virtual string UserName { get; set; }
-        public virtual string Password { get; set; }
+        public string UserName { get; set; }
+        public string PasswordHash { get; set; }
+        public string NormalizedUserName { get; set; }
+
 
     }
 }
