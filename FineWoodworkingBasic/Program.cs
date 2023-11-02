@@ -41,7 +41,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.SignIn.RequireConfirmedEmail = false;
 
-});
+})
+    .AddDefaultTokenProviders(); 
 
 // Identity Services
 builder.Services.AddTransient<IUserStore<ApplicationUser>, CustomUserStore>();

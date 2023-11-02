@@ -29,7 +29,7 @@ namespace FineWoodworkingBasic.Authentication.Provider
 
                 string sql = "INSERT INTO AuthorizedUser (Username, Password) " +
                     " OUTPUT INSERTED.ID " +
-                    " VALUES (@Username, @Password);";
+                    " VALUES (@UserName, @Password);";
                 command.CommandText = sql;
 
                 parameter = new SqlParameter("@UserName", SqlDbType.NVarChar, 100);  // Fix Type and Length 
@@ -37,11 +37,13 @@ namespace FineWoodworkingBasic.Authentication.Provider
                 command.Parameters.Add(parameter);
 
                 parameter = new SqlParameter("@Password", SqlDbType.NVarChar, 100);  // Fix Type and Length 
-                parameter.Value = user.Password;
+                parameter.Value = user.PasswordHash;
                 command.Parameters.Add(parameter);
 
                 rows = await command.ExecuteNonQueryAsync();
             }
+
+            _connection.Close();
 
             if (rows > 0)
             {
@@ -67,11 +69,43 @@ namespace FineWoodworkingBasic.Authentication.Provider
 
         public async Task<ApplicationUser> FindByNameAsync(string userName)
         {
-            string sql = "SELECT * " +
-                        "FROM dbo.CustomUser " +
-                        "WHERE UserName = @UserName;";
+            _connection.Open();
 
-            throw new NotImplementedException();
+            SqlDataReader reader;
+            int ID;
+            string UN;
+            string PH;
+
+            using (var command = new SqlCommand())
+            {
+                command.Connection = _connection;
+                command.CommandType = CommandType.Text;
+
+                SqlParameter parameter;
+
+                string sql = @"SELECT * FROM AuthorizedUser WHERE Username = @UserName;";
+                command.CommandText = sql;
+
+                parameter = new SqlParameter("@UserName", SqlDbType.NVarChar, 100);  // Fix Type and Length 
+                parameter.Value = userName;
+                command.Parameters.Add(parameter);
+
+                reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    ID = reader.GetInt32(0);
+                    UN = reader.GetString(1);
+                    PH = reader.GetString(2);
+
+                    _connection.Close();
+
+                    return new ApplicationUser { UserName = UN, PasswordHash = PH };
+                }
+
+                _connection.Close();
+                return null;
+            }
         }
     }
 }
