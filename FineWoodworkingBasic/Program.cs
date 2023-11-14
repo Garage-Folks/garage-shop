@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Components.Authorization;
 using FineWoodworkingBasic.Authentication.Provider;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using FineWoodworkingBasic.Provider;
+using FineWoodworkingBasic.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +52,7 @@ builder.Services.AddTransient<SqlConnection>(e => new SqlConnection(connectionSt
 builder.Services.AddTransient<UsersTable>();
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationService>();
 
 var app = builder.Build();
 
