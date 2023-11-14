@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Security.Principal;
 
 namespace FineWoodworkingBasic.Authentication
 {
@@ -19,6 +20,23 @@ namespace FineWoodworkingBasic.Authentication
                     UserChanged(currentUser);
                 }
             }
+        }
+
+        public void SetUser(string username)
+        {
+            var identity = new ClaimsIdentity(
+            new[]
+            {
+                new Claim(ClaimTypes.Name, username),
+            },
+            "Custom Authentication");
+
+            currentUser = new ClaimsPrincipal(identity);
+        }
+
+        public void LogoutUser()
+        {
+            currentUser = new ClaimsPrincipal();
         }
     }
 }
