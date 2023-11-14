@@ -100,7 +100,7 @@ namespace FineWoodworkingBasic.Authentication.Provider
 
                     _connection.Close();
 
-                    return new ApplicationUser { Id = reader.GetInt32(0), UserName = UN, PasswordHash = PH };
+                    return new ApplicationUser { Id = ID, UserName = UN, PasswordHash = PH };
                 }
 
                 _connection.Close();
