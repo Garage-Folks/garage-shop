@@ -1,28 +1,26 @@
-﻿using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using FineWoodworkingBasic.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
-namespace FineWoodworkingBasic.Provider
+
+namespace FineWoodworkingBasic.Authentication
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        public override Task<AuthenticationState> GetAuthenticationStateAsync()
-        {
-            var identity = new ClaimsIdentity();
-            var user = new ClaimsPrincipal(identity);
+        private AuthenticationState authenticationState;
 
-            return Task.FromResult(new AuthenticationState(user));
-        }
-
-        public void AuthenticateUser(string userIdentifier)
+        public CustomAuthenticationStateProvider(AuthenticationService service)
         {
-            var identity = new ClaimsIdentity(new[]
+            authenticationState = new AuthenticationState(service.CurrentUser);
+
+            service.UserChanged += (newUser) =>
             {
-                new Claim(ClaimTypes.Name, userIdentifier),
-            }, "Custom Authentication");
+                authenticationState = new AuthenticationState(newUser);
 
-            var user = new ClaimsPrincipal(identity);
-
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+                NotifyAuthenticationStateChanged(
+                    Task.FromResult(new AuthenticationState(newUser)));
+            };
         }
+
+        public override Task<AuthenticationState> GetAuthenticationStateAsync() =>
+            Task.FromResult(authenticationState);
     }
 }
