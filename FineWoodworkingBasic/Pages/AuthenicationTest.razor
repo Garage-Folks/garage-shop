@@ -1,0 +1,69 @@
+﻿@page "/authtest"
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@namespace FineWoodworkingBasic.Pages
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<p>
+    <input @bind="userIdentifierRegister" />
+    <input @bind="pswRegister" />
+    <button @onclick="Register">Register</button>
+</p>
+<p>
+    <input @bind="userIdentifierLogin" />
+    <input @bind="pswLogin" />
+    <button @onclick="Login">Login</button>
+</p>
+<p>
+    <button @onclick="Logout">Logout</button>
+</p>
+
+<AuthorizeView>
+    <Authorized>
+        <p>Hello, @context.User.Identity?.Name!</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You're not authorized.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    public string userIdentifierRegister = string.Empty;
+    public string userIdentifierLogin = string.Empty;
+    public string pswRegister = string.Empty;
+    public string pswLogin = string.Empty;
+
+    private async void Register()
+    {
+        var user = new ApplicationUser { UserName = userIdentifierRegister };
+        var result = await UserManager.CreateAsync(user, pswRegister);
+        if (result.Succeeded)
+        {
+            AuthenticationService.SetUser(userIdentifierRegister);
+            StateHasChanged();
+        }
+    }
+    private async void Login()
+    {
+        if (!string.IsNullOrWhiteSpace(userIdentifierLogin) && !string.IsNullOrWhiteSpace(pswLogin))
+        {
+            var user = await UserManager.FindByNameAsync(userIdentifierLogin);
+            if (user != null && await UserManager.CheckPasswordAsync(user, pswLogin))
+            {
+                AuthenticationService.SetUser(userIdentifierLogin);
+            }
+        }
+    }
+    private void Logout()
+    {
+        AuthenticationService.LogoutUser();
+    }
+}
