@@ -22,12 +22,13 @@ namespace FineWoodworkingBasic.Authentication
             }
         }
 
-        public void SetUser(string username)
+        public void SetUser(string username, string role)
         {
             var identity = new ClaimsIdentity(
             new[]
             {
-                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Name, username), 
+                new Claim(ClaimTypes.Role, role)
             },
             "Custom Authentication");
 

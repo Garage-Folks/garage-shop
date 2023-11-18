@@ -8,24 +8,39 @@
 @using FineWoodworkingBasic.Util;
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationService AuthenticationService
+@inject UsersTable ut
+@inject NavigationManager NavigationManager
 @namespace FineWoodworkingBasic.Pages
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<p>
-    <input @bind="userIdentifierRegister" />
-    <input @bind="pswRegister" />
-    <button @onclick="Register">Register</button>
-</p>
-<p>
-    <input @bind="userIdentifierLogin" />
-    <input @bind="pswLogin" />
-    <button @onclick="Login">Login</button>
-</p>
-<p>
-    <button @onclick="Logout">Logout</button>
-</p>
+<AuthorizeView>
+    <NotAuthorized>
+        <p>
+            Username: <input @bind="userIdentifierRegister" />
+            Password: <input @bind="pswRegister" />
+            <button @onclick="Register">Register</button>
+        </p>
+        <p>
+            Username: <input @bind="userIdentifierLogin" />
+            Password: <input @bind="pswLogin" />
+            <button @onclick="Login">Login</button>
+        </p>
+    </NotAuthorized>
+    <Authorized>
+        <p>
+            <button @onclick="Logout">Logout</button>
+        </p>
+        <p>
+            <button @onclick="MakeAdmin">Make Current Logged In User an Admin</button>
+        </p>
+    </Authorized>
+</AuthorizeView>
 
+<p>
+    <button @onclick="Create">Create Tables</button>
+</p>
+<br />
 <AuthorizeView>
     <Authorized>
         <p>Hello, @context.User.Identity?.Name!</p>
@@ -33,6 +48,16 @@
     <NotAuthorized>
         <p>You're not authorized.</p>
     </NotAuthorized>
+</AuthorizeView>
+<AuthorizeView Roles="User">
+    <Authorized>
+        <p>You are a User.</p>
+    </Authorized>
+</AuthorizeView>
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <p>You are an Admin.</p>
+    </Authorized>
 </AuthorizeView>
 
 @code {
@@ -47,8 +72,7 @@
         var result = await UserManager.CreateAsync(user, pswRegister);
         if (result.Succeeded)
         {
-            AuthenticationService.SetUser(userIdentifierRegister);
-            StateHasChanged();
+            AuthenticationService.SetUser(user.UserName, user.Role);
         }
     }
     private async void Login()
@@ -58,12 +82,27 @@
             var user = await UserManager.FindByNameAsync(userIdentifierLogin);
             if (user != null && await UserManager.CheckPasswordAsync(user, pswLogin))
             {
-                AuthenticationService.SetUser(userIdentifierLogin);
+                AuthenticationService.SetUser(user.UserName, user.Role);
             }
         }
     }
     private void Logout()
     {
         AuthenticationService.LogoutUser();
+    }
+    private async void Create()
+    {
+        bool userResult = await ut.CreateUsersTableAsync();
+        bool rolesResult = await ut.CreateRolesTableAsync();
+    }
+    private async void MakeAdmin()
+    {
+        string currentUserName = AuthenticationService.CurrentUser.Identity?.Name!;
+        if (await ut.SetUserRole(currentUserName, "Admin"))
+        {
+            AuthenticationService.LogoutUser();
+            var user = await UserManager.FindByNameAsync(currentUserName);
+            AuthenticationService.SetUser(user.UserName, user.Role);
+        }
     }
 }

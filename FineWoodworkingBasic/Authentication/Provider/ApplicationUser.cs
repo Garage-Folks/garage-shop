@@ -9,5 +9,7 @@ namespace FineWoodworkingBasic.Authentication.Provider
         public string UserName { get; set; }
         public string PasswordHash { get; set; }
         public string NormalizedUserName { get; set; }
+        public string Role { get; set; } = "User";
+        // By default, user will be in the User role
     }
 }
