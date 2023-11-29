@@ -59,9 +59,9 @@ namespace FineWoodworkingBasic.Model
                 FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
                 LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
-                Length = reader.GetInt32(reader.GetOrdinal("Length"));
-                Width = reader.GetInt32(reader.GetOrdinal("Width"));
-                Thickness = reader.GetInt32(reader.GetOrdinal("Thickness"));
+                Length = reader.GetDouble(reader.GetOrdinal("Length"));
+                Width = reader.GetDouble(reader.GetOrdinal("Width"));
+                Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
 
             }
         }
