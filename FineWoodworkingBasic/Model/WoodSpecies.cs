@@ -49,7 +49,6 @@ namespace FineWoodworkingBasic.Model
             d["id"] = IDStr;
             PopulateHelper(d);
         }
-       
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> dictIdToUse, QC.SqlCommand command)
         {
