@@ -15,22 +15,24 @@ namespace FineWoodworkingBasic.Model
         // Foreign Key
         protected int WoodSpeciesID { get; set; }   
         
-        public Lumber(int id, string name, string notes, string fileImg1, string fileImg2, string fileImg3,
-            int quantity, double length, double width, double thickness) : 
-            base(id, name, name, notes, fileImg1, fileImg2, quantity)
+        public Lumber(int id, string name, string notes, string fileImg1, string fileImg2, 
+            string fileImg3, int quantity, double length, double width, double thickness, int woodSpeciesId) : 
+            base(id, name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
             Length = length;
             Width = width;
             Thickness = thickness;
+            WoodSpeciesID = woodSpeciesId;
         }
 
         public Lumber(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
-            int quantity, double length, double width, double thickness) : 
-            base(name, name, notes, fileImg1, fileImg2, quantity)
+            int quantity, double length, double width, double thickness, int woodSpeciesId) :
+            base(name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
             Length = length;
             Width = width;
             Thickness = thickness;
+            WoodSpeciesID = woodSpeciesId;
         }
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> dictIdToUse, QC.SqlCommand command)
@@ -52,17 +54,17 @@ namespace FineWoodworkingBasic.Model
             while (reader.Read())
             {
                 ID = reader.GetInt32(reader.GetOrdinal("ID"));
+                LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
+                WoodSpeciesID = reader.GetInt32(reader.GetOrdinal("SpeciesWoodID"));
                 Name = reader.GetString(reader.GetOrdinal("Name"));
-                Notes = reader.GetString(reader.GetOrdinal("Notes"));
+                Length = reader.GetDouble(reader.GetOrdinal("Length"));
+                Width = reader.GetDouble(reader.GetOrdinal("Width"));
+                Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
                 FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
-                Length = reader.GetDouble(reader.GetOrdinal("Length"));
-                Width = reader.GetDouble(reader.GetOrdinal("Width"));
-                Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
-
+                Notes = reader.GetString(reader.GetOrdinal("Notes"));
             }
         }
 
@@ -80,9 +82,9 @@ namespace FineWoodworkingBasic.Model
 
             QC.SqlParameter parameter;
 
-            string insertQuery = "INSERT INTO Lumber (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, Length, Width, Thickness ) " +
+            string insertQuery = "INSERT INTO Lumber (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, Length, Width, Thickness, SpeciesWoodID) " +
                 " OUTPUT INSERTED.ID " +
-                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @Length, @Width, @Thickness);";
+                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @Length, @Width, @Thickness, @WoodSpeciesID);";
 
             command.CommandText = insertQuery;
 
@@ -126,6 +128,9 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = Thickness;
             command.Parameters.Add(parameter);
 
+            parameter = new QC.SqlParameter("@WoodSpeciesID", DT.SqlDbType.Int, 1000); // Fix Type and Length  
+            parameter.Value = WoodSpeciesID;
+            command.Parameters.Add(parameter);
         }
 
         protected override void SetupCommandForDelete(QC.SqlCommand command)
@@ -168,8 +173,6 @@ namespace FineWoodworkingBasic.Model
             parameter = new QC.SqlParameter("@Id", DT.SqlDbType.Int);  // Fix Type and Length 
             parameter.Value = ID;
             command.Parameters.Add(parameter);
-
-
         }
 
         protected override bool IsNewObject()
