@@ -1,0 +1,99 @@
+﻿using System.Text;
+using DT = System.Data;
+using QC = Microsoft.Data.SqlClient;
+using FineWoodworkingBasic.Util;
+using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
+
+namespace FineWoodworkingBasic.Model
+{
+    public class WoodSpeciesCollection : PersistableCollection
+    {
+        protected List<WoodSpecies> WoodSpeciesList;
+
+        protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
+
+        protected PopulateQueryMethodType QueryMethod;
+
+        public WoodSpeciesCollection()
+        {
+            WoodSpeciesList = new List<WoodSpecies>();
+            QueryMethod = QueryConstructorAll;
+        }
+
+        // Fully helper methods
+        protected override void ProcessPopulateQueryResult(QC.SqlDataReader reader)
+        {
+            while (reader.Read())
+            {
+                int ID = reader.GetInt32(reader.GetOrdinal("ID"));
+                string Name = reader.GetString(reader.GetOrdinal("Name"));
+                string Notes = reader.GetString(reader.GetOrdinal("Notes"));
+                WoodSpecies woodSpecies = new WoodSpecies(ID, Name, Notes);
+                WoodSpeciesList.Add(woodSpecies);
+            }
+        }
+
+        public void PopulateAll()
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorAll);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            PopulateHelper(d);
+        }
+
+        protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> val, QC.SqlCommand command)
+        {
+            QueryMethod(val, command);
+        }
+
+        protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
+        {
+            string query = @"SELECT * FROM SpeciesWood";
+
+            command.CommandText = query;
+        }
+
+        protected override ResultMessage GetResultMessageForPopulate()
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "WoodSpecies Collection " +
+                " retrieved successfully!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetResultMessageForSave()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving WoodSpecies Collection " +
+                " from database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetErrorMessageForSave(Exception Ex)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override string ToString()
+        {
+            string retVal = "";
+            for (int cnt = 0; cnt < WoodSpeciesList.Count; cnt++)
+            {
+                retVal += WoodSpeciesList[cnt].ToString();
+            }
+
+            return retVal;
+        }
+
+
+    }
+
+
+
+
+
+}
