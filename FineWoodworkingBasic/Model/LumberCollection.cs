@@ -4,6 +4,7 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -37,13 +38,13 @@ namespace FineWoodworkingBasic.Model
                 double Length = reader.GetDouble(reader.GetOrdinal("Length"));
                 double Width = reader.GetDouble(reader.GetOrdinal("Width"));
                 double Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
-                Lumber lumber = new Lumber(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, Length, Width, Thickness);
+                int WoodSpeciesID = reader.GetInt32(reader.GetOrdinal("SpeciesWoodID"));
+                Lumber lumber = new Lumber(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, Length, Width, Thickness, WoodSpeciesID);
                 lumber.SetLocationID(LocationID);
                 LumberList.Add(lumber);
 
             }
         }
-
 
         public void PopulateAll()
         {
@@ -59,7 +60,58 @@ namespace FineWoodworkingBasic.Model
             d["name"] = namePart;
             PopulateHelper(d);
         }
-      
+
+        public void PopulateViaWoodSpeciesName(string woodSpeciesNamePart)
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesName);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["woodSpeciesName"] = woodSpeciesNamePart;
+            PopulateHelper(d);
+        }
+
+        public void PopulateViaWoodSpeciesID(string woodSpeciesIDPart)
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesName);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["woodSpeciesID"] = woodSpeciesIDPart;
+            PopulateHelper(d);
+        }
+
+        public void PopulateViaDimension(string dimension, double lowerLimit, double upperLimit)
+        {
+            if (!(dimension.Equals("length") || dimension.Equals("width") || dimension.Equals("thickness")))
+                throw new ArgumentException();
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaDimension);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["dimension"] = dimension;
+            d["lowerLimitPart"] = lowerLimit;
+            d["upperLimitPart"] = upperLimit;
+            PopulateHelper(d);
+        }
+
+        public void PopulateViaMultiDimension(double lengthLower = -1, double lengthUpper = -1, double widthLower = -1,
+            double widthUpper = -1, double thicknessLower = -1, double thicknessUpper = -1)
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaMultiDimension);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            if (lengthLower <= 0 || lengthUpper <= 0)
+            {
+                d["lengthLowerPart"] = (lengthLower == -1) ? 0 : lengthLower;
+                d["lengthUpperPart"] = (lengthUpper == -1) ? Int32.MaxValue : lengthUpper;
+            }
+            if (widthLower <= 0 || widthUpper <= 0)
+            {
+                d["widthLowerPart"] = (widthLower == -1) ? 0 : widthLower;
+                d["widthUpperPart"] = (widthUpper == -1) ? Int32.MaxValue : widthUpper;
+            }
+            if (thicknessLower <= 0 || thicknessUpper <= 0)
+            {
+                d["thicknessLowerPart"] = (thicknessLower == -1) ? 0 : thicknessLower;
+                d["thicknessUpperPart"] = (thicknessUpper == -1) ? Int32.MaxValue : thicknessUpper;
+            }
+            PopulateHelper(d);
+        }
+
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> val, QC.SqlCommand command)
         {
             QueryMethod(val, command);
@@ -67,14 +119,10 @@ namespace FineWoodworkingBasic.Model
 
         protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
         {
-            QC.SqlParameter parameter;
-
             string query = @"SELECT * FROM Lumber";
 
             command.CommandText = query;
-            
         }
-
 
         protected virtual void QueryConstructorViaName(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
         {
@@ -88,7 +136,118 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = dictNotesPart["name"];
             command.Parameters.Add(parameter);
         }
-      
+
+        protected virtual void QueryConstructorViaWoodSpeciesName(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+
+            string query = @"SELECT * FROM Lumber INNER JOIN WoodSpecies ON
+                            (Lumber.WoodSpeciesID = WoodSpecies.ID)
+                            AND (WoodSpecies.Name LIKE CONCAT('%', @WSNP, '%'));";
+
+            command.CommandText = query;
+
+            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["woodSpeciesName"];
+            command.Parameters.Add(parameter);
+        }
+
+        protected virtual void QueryConstructorViaWoodSpeciesID(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+
+            string query = @"SELECT * FROM Lumber WHERE SpeciesWoodID = @WSIDP;";
+
+            command.CommandText = query;
+
+            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.Int, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["woodSpeciesID"];
+            command.Parameters.Add(parameter);
+        }
+
+        protected virtual void QueryConstructorViaDimension(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+
+            string query = @"SELECT * FROM Lumber WHERE @DIM BETWEEN @LOW AND @UP;";
+
+            command.CommandText = query;
+
+            parameter = new QC.SqlParameter("@DIM", DT.SqlDbType.NVarChar, 1000);
+            if (dictNotesPart["dimension"].Equals("length"))
+                parameter.Value = "Length";
+            else if (dictNotesPart["dimension"].Equals("width"))
+                parameter.Value = "Width";
+            else
+                parameter.Value = "Thickness";
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@LOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["lowerLimitPart"];
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@UP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["upperLimitPart"];
+            command.Parameters.Add(parameter);
+        }
+
+        protected virtual void QueryConstructorViaMultiDimension(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+            bool firstSeg = true;
+
+            string query = @"SELECT * FROM Lumber WHERE ";
+            if (dictNotesPart.ContainsKey("lengthLowerPart") && dictNotesPart.ContainsKey("lengthUpperPart"))
+            {
+                query += " Length BETWEEN @LENLOW AND @LENUP";
+                firstSeg = false;
+            }
+            if (dictNotesPart.ContainsKey("widthLowerPart") && dictNotesPart.ContainsKey("widthUpperPart"))
+            {
+                if (!firstSeg) query += " AND";
+                else firstSeg = false;
+                query += " Width BETWEEN @WIDLOW AND @WIDUP";
+            }
+            if (dictNotesPart.ContainsKey("thicknessLowerPart") && dictNotesPart.ContainsKey("thicknessUpperPart"))
+            {
+                if (!firstSeg) query += " AND";
+                query += " Thickness BETWEEN @THILOW AND @THIUP";
+            }
+            query += ";";
+
+            command.CommandText = query;
+
+            if (dictNotesPart.ContainsKey("lengthLowerPart") && dictNotesPart.ContainsKey("lengthUpperPart"))
+            {
+                parameter = new QC.SqlParameter("@LENLOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["lengthLowerPart"];
+                command.Parameters.Add(parameter);
+
+                parameter = new QC.SqlParameter("@LENUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["lengthUpperPart"];
+                command.Parameters.Add(parameter);
+            }
+            if (dictNotesPart.ContainsKey("widthLowerPart") && dictNotesPart.ContainsKey("widthUpperPart"))
+            {
+                parameter = new QC.SqlParameter("@WIDLOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["widthLowerPart"];
+                command.Parameters.Add(parameter);
+
+                parameter = new QC.SqlParameter("@WIDUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["widthUpperPart"];
+                command.Parameters.Add(parameter);
+            }
+            if (dictNotesPart.ContainsKey("thicknessLowerPart") && dictNotesPart.ContainsKey("thicknessUpperPart"))
+            {
+                parameter = new QC.SqlParameter("@THILOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["thicknessLowerPart"];
+                command.Parameters.Add(parameter);
+
+                parameter = new QC.SqlParameter("@THIUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["thicknessUpperPart"];
+                command.Parameters.Add(parameter);
+            }
+        }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
