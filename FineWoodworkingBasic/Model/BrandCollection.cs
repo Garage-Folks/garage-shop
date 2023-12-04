@@ -4,6 +4,7 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -26,7 +27,7 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                int locID = reader.GetInt32(0);
+                SqlGuid locID = reader.GetSqlGuid(0);
                 string locName = reader.GetString(1);
                 string locNotes = reader.GetString(2);
                 BrandList.Add(new Brand(locID, locName, locNotes));

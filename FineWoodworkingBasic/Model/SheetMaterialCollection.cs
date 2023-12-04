@@ -5,6 +5,7 @@ using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
+using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -27,14 +28,14 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                int ID = reader.GetInt32(reader.GetOrdinal("ID"));
+                SqlGuid ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
                 string Name = reader.GetString(reader.GetOrdinal("Name"));
                 string Notes = reader.GetString(reader.GetOrdinal("Notes"));
                 string FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 string FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 string FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 int Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                int LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
+                SqlGuid LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
                 double Length = reader.GetDouble(reader.GetOrdinal("Length"));
                 double Width = reader.GetDouble(reader.GetOrdinal("Width"));
                 double Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));

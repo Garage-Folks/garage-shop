@@ -5,6 +5,7 @@ using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
+using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -27,17 +28,17 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                int ID = reader.GetInt32(reader.GetOrdinal("ID"));
+                SqlGuid ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
                 string Name = reader.GetString(reader.GetOrdinal("Name"));
                 string Notes = reader.GetString(reader.GetOrdinal("Notes"));
                 string FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 string FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 string FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 int Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                int LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
+                SqlGuid LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
                 double Length = reader.GetDouble(reader.GetOrdinal("Length"));
                 double Diameter = reader.GetDouble(reader.GetOrdinal("Diameter"));
-                int WoodSpeciesID = reader.GetInt32(reader.GetOrdinal("SpeciesWoodID"));
+                SqlGuid WoodSpeciesID = reader.GetSqlGuid(reader.GetOrdinal("SpeciesWoodID"));
                 Log log = new Log(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, Length, Diameter, WoodSpeciesID);
                 log.SetLocationID(LocationID);
                 LogList.Add(log);
@@ -68,7 +69,7 @@ namespace FineWoodworkingBasic.Model
             PopulateHelper(d);
         }
 
-        public void PopulateViaWoodSpeciesID(string woodSpeciesIDPart)
+        public void PopulateViaWoodSpeciesID(SqlGuid woodSpeciesIDPart)
         {
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesName);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
@@ -154,7 +155,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.Int, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.UniqueIdentifier, 1000);  // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesID"];
             command.Parameters.Add(parameter);
         }
