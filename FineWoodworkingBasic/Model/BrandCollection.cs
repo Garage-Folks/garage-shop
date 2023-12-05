@@ -19,7 +19,7 @@ namespace FineWoodworkingBasic.Model
         public BrandCollection()
         {
             BrandList = new List<Brand>();
-            QueryMethod = QueryConstructorViaName;
+            QueryMethod = QueryConstructorAll;
         }
 
         // Fully helper methods
@@ -34,6 +34,12 @@ namespace FineWoodworkingBasic.Model
             }
         }
 
+        public void PopulateAll()
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorAll);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            PopulateHelper(d);
+        }
 
         public void PopulateViaName(string namePart)
         {
@@ -61,6 +67,13 @@ namespace FineWoodworkingBasic.Model
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> val, QC.SqlCommand command)
         {
             QueryMethod(val, command);
+        }
+
+        protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
+        {
+            string query = @"SELECT * FROM Brand";
+
+            command.CommandText = query;
         }
 
         protected virtual void QueryConstructorViaName(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
