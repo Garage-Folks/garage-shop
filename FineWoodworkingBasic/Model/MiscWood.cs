@@ -142,7 +142,9 @@ namespace FineWoodworkingBasic.Model
             QC.SqlParameter parameter;
 
             string updateQuery = "UPDATE MiscWood" +
-               " SET Name = @Name, Notes = @Notes " +
+               " SET Name = @Name, Notes = @Notes, LinkImg1 = @LinkImg1, " +
+               " LinkImg2 = @LinkImg2, LinkImg3 = @LinkImg3, Qty = @Qty, LocationID = @LocationID," +
+               " SpeciesDesc = @SpeciesDesc, SpeciesWoodID = @WoodSpeciesID" +
                " WHERE (ID = @Id);";
 
             command.CommandText = updateQuery;
@@ -153,6 +155,34 @@ namespace FineWoodworkingBasic.Model
 
             parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
             parameter.Value = Notes;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter.Value = FileImage1;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter.Value = FileImage2;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter.Value = FileImage3;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 1000); // Fix Type and Length  
+            parameter.Value = Quantity;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
+            parameter.Value = LocationID;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@SpeciesDesc", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
+            parameter.Value = SpeciesDesc;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@WoodSpeciesID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
+            parameter.Value = WoodSpeciesID;
             command.Parameters.Add(parameter);
 
             parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
