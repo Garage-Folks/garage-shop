@@ -80,17 +80,14 @@ namespace FineWoodworkingBasic.Model
             if (lengthLower <= 0 || lengthUpper <= 0)
             {
                 d["lengthLowerPart"] = (lengthLower == -1) ? 0 : lengthLower;
-                d["lengthUpperPart"] = (lengthUpper == -1) ? 2_147_483_647 : lengthUpper;
             }
             if (widthLower <= 0 || widthUpper <= 0)
             {
                 d["widthLowerPart"] = (widthLower == -1) ? 0 : widthLower;
-                d["widthUpperPart"] = (widthUpper == -1) ? 2_147_483_647 : widthUpper;
             }
             if (thicknessLower <= 0 || thicknessUpper <= 0)
             {
                 d["thicknessLowerPart"] = (thicknessLower == -1) ? 0 : thicknessLower;
-                d["thicknessUpperPart"] = (thicknessUpper == -1) ? 2_147_483_647 : thicknessUpper;
             }
             PopulateHelper(d);
         }

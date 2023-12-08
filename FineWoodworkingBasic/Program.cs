@@ -13,11 +13,7 @@ using FineWoodworkingBasic.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
-Utilities.EstablishConnection("C:\\Users\\jaybo\\source\\repos\\garage-shop\\FineWoodworkingBasic\\DBConfig.ini");
-=======
 Utilities.EstablishConnection("C:\\Users\\nokil\\source\\repos\\garage-shop\\FineWoodworkingBasic\\dbConfig.ini");
->>>>>>> 45aac51 (loginFunctionality: Initial custom identity provider and custom authentication state provider)
 
 // Add services to the container.
 builder.Services.AddRazorPages();
