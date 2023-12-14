@@ -9,17 +9,17 @@ using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
-    public class LumberCollection : PersistableCollection
+    public class LogCollection : PersistableCollection
     {
-        protected List<Lumber> LumberList;
+        protected List<Log> LogList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 
         protected PopulateQueryMethodType QueryMethod;
 
-        public LumberCollection()
+        public LogCollection()
         {
-            LumberList = new List<Lumber>();
+            LogList = new List<Log>();
             QueryMethod = QueryConstructorAll;
         }
 
@@ -37,12 +37,11 @@ namespace FineWoodworkingBasic.Model
                 int Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
                 SqlGuid LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
                 double Length = reader.GetDouble(reader.GetOrdinal("Length"));
-                double Width = reader.GetDouble(reader.GetOrdinal("Width"));
-                double Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
+                double Diameter = reader.GetDouble(reader.GetOrdinal("Diameter"));
                 SqlGuid WoodSpeciesID = reader.GetSqlGuid(reader.GetOrdinal("SpeciesWoodID"));
-                Lumber lumber = new Lumber(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, Length, Width, Thickness, WoodSpeciesID);
-                lumber.SetLocationID(LocationID);
-                LumberList.Add(lumber);
+                Log log = new Log(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, Length, Diameter, WoodSpeciesID);
+                log.SetLocationID(LocationID);
+                LogList.Add(log);
 
             }
         }
@@ -80,7 +79,7 @@ namespace FineWoodworkingBasic.Model
 
         public void PopulateViaDimension(string dimension, double lowerLimit, double upperLimit)
         {
-            if (!(dimension.Equals("length") || dimension.Equals("width") || dimension.Equals("thickness")))
+            if (!(dimension.Equals("length") || dimension.Equals("diameter")))
                 throw new ArgumentException();
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaDimension);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
@@ -90,8 +89,8 @@ namespace FineWoodworkingBasic.Model
             PopulateHelper(d);
         }
 
-        public void PopulateViaMultiDimension(double lengthLower = -1, double lengthUpper = -1, double widthLower = -1,
-            double widthUpper = -1, double thicknessLower = -1, double thicknessUpper = -1)
+        public void PopulateViaMultiDimension(double lengthLower = -1, double lengthUpper = -1, 
+            double diameterLower = -1, double diameterUpper = -1)
         {
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaMultiDimension);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
@@ -100,15 +99,10 @@ namespace FineWoodworkingBasic.Model
                 d["lengthLowerPart"] = (lengthLower == -1) ? 0 : lengthLower;
                 d["lengthUpperPart"] = (lengthUpper == -1) ? Int32.MaxValue : lengthUpper;
             }
-            if (widthLower <= 0 || widthUpper <= 0)
+            if (diameterLower <= 0 || diameterUpper <= 0)
             {
-                d["widthLowerPart"] = (widthLower == -1) ? 0 : widthLower;
-                d["widthUpperPart"] = (widthUpper == -1) ? Int32.MaxValue : widthUpper;
-            }
-            if (thicknessLower <= 0 || thicknessUpper <= 0)
-            {
-                d["thicknessLowerPart"] = (thicknessLower == -1) ? 0 : thicknessLower;
-                d["thicknessUpperPart"] = (thicknessUpper == -1) ? Int32.MaxValue : thicknessUpper;
+                d["diameterLowerPart"] = (diameterLower == -1) ? 0 : diameterLower;
+                d["diameterUpperPart"] = (diameterUpper == -1) ? Int32.MaxValue : diameterUpper;
             }
             PopulateHelper(d);
         }
@@ -120,7 +114,7 @@ namespace FineWoodworkingBasic.Model
 
         protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
         {
-            string query = @"SELECT * FROM Lumber";
+            string query = @"SELECT * FROM Log";
 
             command.CommandText = query;
         }
@@ -129,7 +123,7 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber WHERE (Name LIKE CONCAT('%', @NP, '%'));";
+            string query = @"SELECT * FROM Log WHERE (Name LIKE CONCAT('%', @NP, '%'));";
 
             command.CommandText = query;
 
@@ -142,8 +136,8 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber INNER JOIN WoodSpecies ON
-                            (Lumber.WoodSpeciesID = WoodSpecies.ID)
+            string query = @"SELECT * FROM Log INNER JOIN WoodSpecies ON
+                            (Log.WoodSpeciesID = WoodSpecies.ID)
                             AND (WoodSpecies.Name LIKE CONCAT('%', @WSNP, '%'));";
 
             command.CommandText = query;
@@ -157,7 +151,7 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber WHERE SpeciesWoodID = @WSIDP;";
+            string query = @"SELECT * FROM Log WHERE SpeciesWoodID = @WSIDP;";
 
             command.CommandText = query;
 
@@ -170,17 +164,15 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber WHERE @DIM BETWEEN @LOW AND @UP;";
+            string query = @"SELECT * FROM Log WHERE @DIM BETWEEN @LOW AND @UP;";
 
             command.CommandText = query;
 
             parameter = new QC.SqlParameter("@DIM", DT.SqlDbType.NVarChar, 1000);
             if (dictNotesPart["dimension"].Equals("length"))
                 parameter.Value = "Length";
-            else if (dictNotesPart["dimension"].Equals("width"))
-                parameter.Value = "Width";
             else
-                parameter.Value = "Thickness";
+                parameter.Value = "Diameter";
             command.Parameters.Add(parameter);
 
             parameter = new QC.SqlParameter("@LOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
@@ -197,22 +189,16 @@ namespace FineWoodworkingBasic.Model
             QC.SqlParameter parameter;
             bool firstSeg = true;
 
-            string query = @"SELECT * FROM Lumber WHERE ";
+            string query = @"SELECT * FROM Log WHERE";
             if (dictNotesPart.ContainsKey("lengthLowerPart") && dictNotesPart.ContainsKey("lengthUpperPart"))
             {
                 query += " Length BETWEEN @LENLOW AND @LENUP";
                 firstSeg = false;
             }
-            if (dictNotesPart.ContainsKey("widthLowerPart") && dictNotesPart.ContainsKey("widthUpperPart"))
+            if (dictNotesPart.ContainsKey("diameterLowerPart") && dictNotesPart.ContainsKey("diameterUpperPart"))
             {
                 if (!firstSeg) query += " AND";
-                else firstSeg = false;
-                query += " Width BETWEEN @WIDLOW AND @WIDUP";
-            }
-            if (dictNotesPart.ContainsKey("thicknessLowerPart") && dictNotesPart.ContainsKey("thicknessUpperPart"))
-            {
-                if (!firstSeg) query += " AND";
-                query += " Thickness BETWEEN @THILOW AND @THIUP";
+                query += " Diameter BETWEEN @DIALOW AND @DIAUP";
             }
             query += ";";
 
@@ -228,31 +214,21 @@ namespace FineWoodworkingBasic.Model
                 parameter.Value = dictNotesPart["lengthUpperPart"];
                 command.Parameters.Add(parameter);
             }
-            if (dictNotesPart.ContainsKey("widthLowerPart") && dictNotesPart.ContainsKey("widthUpperPart"))
+            if (dictNotesPart.ContainsKey("diameterLowerPart") && dictNotesPart.ContainsKey("diameterUpperPart"))
             {
-                parameter = new QC.SqlParameter("@WIDLOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
-                parameter.Value = dictNotesPart["widthLowerPart"];
+                parameter = new QC.SqlParameter("@DIALOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["diameterLowerPart"];
                 command.Parameters.Add(parameter);
 
-                parameter = new QC.SqlParameter("@WIDUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
-                parameter.Value = dictNotesPart["widthUpperPart"];
-                command.Parameters.Add(parameter);
-            }
-            if (dictNotesPart.ContainsKey("thicknessLowerPart") && dictNotesPart.ContainsKey("thicknessUpperPart"))
-            {
-                parameter = new QC.SqlParameter("@THILOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
-                parameter.Value = dictNotesPart["thicknessLowerPart"];
-                command.Parameters.Add(parameter);
-
-                parameter = new QC.SqlParameter("@THIUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
-                parameter.Value = dictNotesPart["thicknessUpperPart"];
+                parameter = new QC.SqlParameter("@DIAUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter.Value = dictNotesPart["diameterUpperPart"];
                 command.Parameters.Add(parameter);
             }
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Log Collection " +
                 " retrieved successfully!");
             return mesg;
         }
@@ -264,7 +240,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Lumber Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Log Collection " +
                 " from database!");
             return mesg;
         }
@@ -277,9 +253,9 @@ namespace FineWoodworkingBasic.Model
         public override string ToString()
         {
             string retVal = "";
-            for (int cnt = 0; cnt < LumberList.Count; cnt++)
+            for (int cnt = 0; cnt < LogList.Count; cnt++)
             {
-                retVal += LumberList[cnt].ToString();
+                retVal += LogList[cnt].ToString();
             }
 
             return retVal;

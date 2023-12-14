@@ -6,41 +6,36 @@ using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
-    public class Lumber : InventoryItem
+    public class SheetMaterial : InventoryItem
     {
        
         protected double Length { get; set; }
         protected double Width { get; set; }
-        protected double Thickness { get; set; }
-
-        // Foreign Key
-        protected SqlGuid WoodSpeciesID { get; set; }   
+        protected double Thickness { get; set; } 
         
-        public Lumber(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, 
-            string fileImg3, int quantity, double length, double width, double thickness, SqlGuid woodSpeciesId) : 
+        public SheetMaterial(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+            int quantity, double length, double width, double thickness) : 
             base(id, name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
             Length = length;
             Width = width;
             Thickness = thickness;
-            WoodSpeciesID = woodSpeciesId;
         }
 
-        public Lumber(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
-            int quantity, double length, double width, double thickness, SqlGuid woodSpeciesId) :
+        public SheetMaterial(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+            int quantity, double length, double width, double thickness) :
             base(name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
             Length = length;
             Width = width;
             Thickness = thickness;
-            WoodSpeciesID = woodSpeciesId;
         }
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> dictIdToUse, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber WHERE (ID = @NP);";
+            string query = @"SELECT * FROM SheetMaterial WHERE (ID = @NP);";
 
             command.CommandText = query;
 
@@ -55,17 +50,16 @@ namespace FineWoodworkingBasic.Model
             while (reader.Read())
             {
                 ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
-                LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
-                WoodSpeciesID = reader.GetSqlGuid(reader.GetOrdinal("SpeciesWoodID"));
                 Name = reader.GetString(reader.GetOrdinal("Name"));
-                Length = reader.GetDouble(reader.GetOrdinal("Length"));
-                Width = reader.GetDouble(reader.GetOrdinal("Width"));
-                Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
+                Notes = reader.GetString(reader.GetOrdinal("Notes"));
                 FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                Notes = reader.GetString(reader.GetOrdinal("Notes"));
+                LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
+                Length = reader.GetDouble(reader.GetOrdinal("Length"));
+                Width = reader.GetDouble(reader.GetOrdinal("Width"));
+                Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
             }
         }
 
@@ -83,9 +77,9 @@ namespace FineWoodworkingBasic.Model
 
             QC.SqlParameter parameter;
 
-            string insertQuery = "INSERT INTO Lumber (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, Length, Width, Thickness, SpeciesWoodID) " +
+            string insertQuery = "INSERT INTO SheetMaterial (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, Length, Width, Thickness ) " +
                 " OUTPUT INSERTED.ID " +
-                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @Length, @Width, @Thickness, @WoodSpeciesID);";
+                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @Length, @Width, @Thickness);";
 
             command.CommandText = insertQuery;
 
@@ -128,17 +122,13 @@ namespace FineWoodworkingBasic.Model
             parameter = new QC.SqlParameter("@Thickness", DT.SqlDbType.Float, 1000); // Fix Type and Length  
             parameter.Value = Thickness;
             command.Parameters.Add(parameter);
-
-            parameter = new QC.SqlParameter("@WoodSpeciesID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
-            parameter.Value = WoodSpeciesID;
-            command.Parameters.Add(parameter);
         }
 
         protected override void SetupCommandForDelete(QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string deleteQuery = "DELETE FROM Lumber " +
+            string deleteQuery = "DELETE FROM SheetMaterial " +
                 " (WHERE ID = @ID)";
 
             command.CommandText = deleteQuery;
@@ -157,10 +147,10 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string updateQuery = "UPDATE Lumber" +
+            string updateQuery = "UPDATE SheetMaterial" +
                " SET Name = @Name, Notes = @Notes, LinkImg1 = @LinkImg1, " +
                " LinkImg2 = @LinkImg2, LinkImg3 = @LinkImg3, Qty = @Qty, LocationID = @LocationID," +
-               " Length = @Length, Width = @Width, Thickness = @Thickness, SpeciesWoodID = @WoodSpeciesID" +
+               " Length = @Length, Width = @Width, Thickness = @Thickness" +
                " WHERE (ID = @Id);";
 
             command.CommandText = updateQuery;
@@ -205,13 +195,11 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = Thickness;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@WoodSpeciesID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
-            parameter.Value = WoodSpeciesID;
-            command.Parameters.Add(parameter);
-
             parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
             parameter.Value = ID;
             command.Parameters.Add(parameter);
+
+
         }
 
         protected override bool IsNewObject()
@@ -228,42 +216,42 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SheetMaterial with ID: " + this.ID +
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SheetMaterial with name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Lumber with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving SheetMaterial with ID: " + this.ID +
                 " from database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving Lumber with Name: " + this.Name +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving SheetMaterial with Name: " + this.Name +
                 " into database!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SheetMaterial with name: " + this.Name
                     + " deleted successfully from database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForDelete(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting Lumber with Name: " + this.Name +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting SheetMaterial with Name: " + this.Name +
                 " from database!");
             return mesg;
         }

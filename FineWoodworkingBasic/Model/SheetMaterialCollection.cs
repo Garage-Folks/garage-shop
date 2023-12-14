@@ -9,17 +9,17 @@ using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
-    public class LumberCollection : PersistableCollection
+    public class SheetMaterialCollection : PersistableCollection
     {
-        protected List<Lumber> LumberList;
+        protected List<SheetMaterial> SheetMaterialList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 
         protected PopulateQueryMethodType QueryMethod;
 
-        public LumberCollection()
+        public SheetMaterialCollection()
         {
-            LumberList = new List<Lumber>();
+            SheetMaterialList = new List<SheetMaterial>();
             QueryMethod = QueryConstructorAll;
         }
 
@@ -39,11 +39,9 @@ namespace FineWoodworkingBasic.Model
                 double Length = reader.GetDouble(reader.GetOrdinal("Length"));
                 double Width = reader.GetDouble(reader.GetOrdinal("Width"));
                 double Thickness = reader.GetDouble(reader.GetOrdinal("Thickness"));
-                SqlGuid WoodSpeciesID = reader.GetSqlGuid(reader.GetOrdinal("SpeciesWoodID"));
-                Lumber lumber = new Lumber(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, Length, Width, Thickness, WoodSpeciesID);
-                lumber.SetLocationID(LocationID);
-                LumberList.Add(lumber);
-
+                SheetMaterial sheetMaterial = new SheetMaterial(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, Length, Width, Thickness);
+                sheetMaterial.SetLocationID(LocationID);
+                SheetMaterialList.Add(sheetMaterial);
             }
         }
 
@@ -59,22 +57,6 @@ namespace FineWoodworkingBasic.Model
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaName);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
             d["name"] = namePart;
-            PopulateHelper(d);
-        }
-
-        public void PopulateViaWoodSpeciesName(string woodSpeciesNamePart)
-        {
-            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesName);
-            Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["woodSpeciesName"] = woodSpeciesNamePart;
-            PopulateHelper(d);
-        }
-
-        public void PopulateViaWoodSpeciesID(SqlGuid woodSpeciesIDPart)
-        {
-            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesName);
-            Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["woodSpeciesID"] = woodSpeciesIDPart;
             PopulateHelper(d);
         }
 
@@ -120,7 +102,7 @@ namespace FineWoodworkingBasic.Model
 
         protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
         {
-            string query = @"SELECT * FROM Lumber";
+            string query = @"SELECT * FROM SheetMaterial";
 
             command.CommandText = query;
         }
@@ -129,7 +111,7 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber WHERE (Name LIKE CONCAT('%', @NP, '%'));";
+            string query = @"SELECT * FROM SheetMaterial WHERE (Name LIKE CONCAT('%', @NP, '%'));";
 
             command.CommandText = query;
 
@@ -138,39 +120,11 @@ namespace FineWoodworkingBasic.Model
             command.Parameters.Add(parameter);
         }
 
-        protected virtual void QueryConstructorViaWoodSpeciesName(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
-        {
-            QC.SqlParameter parameter;
-
-            string query = @"SELECT * FROM Lumber INNER JOIN WoodSpecies ON
-                            (Lumber.WoodSpeciesID = WoodSpecies.ID)
-                            AND (WoodSpecies.Name LIKE CONCAT('%', @WSNP, '%'));";
-
-            command.CommandText = query;
-
-            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
-            parameter.Value = dictNotesPart["woodSpeciesName"];
-            command.Parameters.Add(parameter);
-        }
-
-        protected virtual void QueryConstructorViaWoodSpeciesID(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
-        {
-            QC.SqlParameter parameter;
-
-            string query = @"SELECT * FROM Lumber WHERE SpeciesWoodID = @WSIDP;";
-
-            command.CommandText = query;
-
-            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.UniqueIdentifier, 1000);  // Fix Type and Length 
-            parameter.Value = dictNotesPart["woodSpeciesID"];
-            command.Parameters.Add(parameter);
-        }
-
         protected virtual void QueryConstructorViaDimension(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber WHERE @DIM BETWEEN @LOW AND @UP;";
+            string query = @"SELECT * FROM SheetMaterial WHERE @DIM BETWEEN @LOW AND @UP;";
 
             command.CommandText = query;
 
@@ -197,7 +151,7 @@ namespace FineWoodworkingBasic.Model
             QC.SqlParameter parameter;
             bool firstSeg = true;
 
-            string query = @"SELECT * FROM Lumber WHERE ";
+            string query = @"SELECT * FROM SheetMaterial WHERE";
             if (dictNotesPart.ContainsKey("lengthLowerPart") && dictNotesPart.ContainsKey("lengthUpperPart"))
             {
                 query += " Length BETWEEN @LENLOW AND @LENUP";
@@ -252,7 +206,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SheetMaterial Collection " +
                 " retrieved successfully!");
             return mesg;
         }
@@ -264,7 +218,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Lumber Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving SheetMaterial Collection " +
                 " from database!");
             return mesg;
         }
@@ -277,9 +231,9 @@ namespace FineWoodworkingBasic.Model
         public override string ToString()
         {
             string retVal = "";
-            for (int cnt = 0; cnt < LumberList.Count; cnt++)
+            for (int cnt = 0; cnt < SheetMaterialList.Count; cnt++)
             {
-                retVal += LumberList[cnt].ToString();
+                retVal += SheetMaterialList[cnt].ToString();
             }
 
             return retVal;

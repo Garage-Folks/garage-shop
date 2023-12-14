@@ -1,24 +1,28 @@
-﻿namespace FineWoodworkingBasic.Model
+﻿using System.Data.SqlTypes;
+
+namespace FineWoodworkingBasic.Model
 { 
     public abstract class InventoryItem : DeletablePersistable
     {
-        protected int? ID { get; set; }
+        protected SqlGuid? ID { get; set; }
         protected string Name { get; set; }
         protected string Notes { get; set; }
-        protected string FileImage1 { get; set; }
-        protected string FileImage2 { get; set; }
-        protected string FileImage3 { get; set; }
+        protected string? FileImage1 { get; set; }
+        protected string? FileImage2 { get; set; }
+        protected string? FileImage3 { get; set; }
         protected int Quantity { get; set; } = 1;
 
         // Foreign key
-        protected int LocationID { get; set; }
+        protected SqlGuid LocationID { get; set; }
 
         public InventoryItem()
         {
-            ID = 0;
+            ID = new SqlGuid();
+            Name = "";
+            Notes = "";
         }
 
-        public InventoryItem(int id, string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+        public InventoryItem(SqlGuid? id, string name, string notes, string? fileImg1, string? fileImg2, string? fileImg3,
             int quantity)
         {
             ID = id;
@@ -30,7 +34,7 @@
             Quantity = quantity;
         }
 
-        public InventoryItem(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+        public InventoryItem(string name, string notes, string? fileImg1, string? fileImg2, string? fileImg3,
             int quantity)
         {
             Name = name;
@@ -49,7 +53,7 @@
             PopulateHelper(d);
         }
 
-        public void SetLocationID(int locID)
+        public void SetLocationID(SqlGuid locID)
         {
             LocationID = locID;
         }
