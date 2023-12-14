@@ -13,13 +13,12 @@ namespace FineWoodworkingBasic.Model
 
         protected SqlGuid? ID { get; set; }
         protected string Name { get; set; }
-        protected string Notes { get; set; }
+        protected string? Notes { get; set; }
 
         public Brand()
         {
             ID = new SqlGuid();
             Name = "";
-            Notes = "";
         }
 
         public Brand(SqlGuid Id, string nm, string notes)
@@ -72,11 +71,6 @@ namespace FineWoodworkingBasic.Model
             }
         }
 
-        
-        /// <summary>
-        /// Hey there!
-        /// </summary>
-        /// <returns></returns>
         public override bool IsPopulated()
         {
             if (this.ID == null) return false;
@@ -133,8 +127,6 @@ namespace FineWoodworkingBasic.Model
             parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
             parameter.Value = ID;
             command.Parameters.Add(parameter);
-
-                
         }
 
         protected override bool IsNewObject()

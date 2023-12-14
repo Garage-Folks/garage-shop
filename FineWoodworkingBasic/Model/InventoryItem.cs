@@ -7,9 +7,9 @@ namespace FineWoodworkingBasic.Model
         protected SqlGuid? ID { get; set; }
         protected string Name { get; set; }
         protected string Notes { get; set; }
-        protected string FileImage1 { get; set; }
-        protected string FileImage2 { get; set; }
-        protected string FileImage3 { get; set; }
+        protected string? FileImage1 { get; set; }
+        protected string? FileImage2 { get; set; }
+        protected string? FileImage3 { get; set; }
         protected int Quantity { get; set; } = 1;
 
         // Foreign key
@@ -18,9 +18,11 @@ namespace FineWoodworkingBasic.Model
         public InventoryItem()
         {
             ID = new SqlGuid();
+            Name = "";
+            Notes = "";
         }
 
-        public InventoryItem(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+        public InventoryItem(SqlGuid? id, string name, string notes, string? fileImg1, string? fileImg2, string? fileImg3,
             int quantity)
         {
             ID = id;
@@ -32,7 +34,7 @@ namespace FineWoodworkingBasic.Model
             Quantity = quantity;
         }
 
-        public InventoryItem(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+        public InventoryItem(string name, string notes, string? fileImg1, string? fileImg2, string? fileImg3,
             int quantity)
         {
             Name = name;
