@@ -1,4 +1,16 @@
 @using Service;
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@inject UsersTable ut
+@inject NavigationManager NavigationManager
+
 <MudPaper Class="pa-5 justify-center" Elevation="4" style="border-radius: 20px 0px 20px 20px; min-width: 200px">
     <MudText 
         Class="mb-2">
@@ -11,6 +23,7 @@
         OnClick="@Submit">
         Log Out
     </MudButton>
+
 </MudPaper>
 
 
@@ -19,12 +32,21 @@
     AccountLogin login = new AccountLogin();
     [Parameter] public EventCallback<string> ParentUpdate {get; set;}
 
+
+    private void ReloadPage()
+    {
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+
     public void Submit()
     {
-        // Simple way of handling the logout
-        login.ToggleLoggedIn(false);
+
+        AuthenticationService.LogoutUser();
         login.ToggleOverlay();
+        ReloadPage();
         ParentUpdate.InvokeAsync();
     }
+
+
     
 }

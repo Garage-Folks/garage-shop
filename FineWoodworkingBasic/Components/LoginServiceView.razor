@@ -1,6 +1,7 @@
 @using Service;
-@if (!login.IsLoggedIn())
-    {
+
+<AuthorizeView>
+<NotAuthorized>
         <MudPopover
             Open=login.IsOverlayOpen()
             OverflowBehavior="OverflowBehavior.FlipAlways" 
@@ -10,7 +11,6 @@
             Duration="300">
             <Login ParentUpdate="Sender"/>
         </MudPopover>
-    }
 @if (login.NeedsRegister())
     {
         <MudPopover
@@ -23,8 +23,8 @@
             <Register ParentUpdate="Sender"/>
         </MudPopover>
     }
-@if (login.IsLoggedIn())
-    {
+</NotAuthorized>
+<Authorized>
         <MudPopover
             Open="login.IsOverlayOpen()" 
             OverflowBehavior="OverflowBehavior.FlipAlways" 
@@ -34,7 +34,8 @@
             Duration="300">
             <Logout ParentUpdate="Sender"/>
         </MudPopover>
-    }
+</Authorized>
+</AuthorizeView>
 
 @code {
     AccountLogin login = new AccountLogin();
