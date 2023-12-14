@@ -27,10 +27,10 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                SqlGuid locID = reader.GetSqlGuid(0);
-                string locName = reader.GetString(1);
-                string locNotes = reader.GetString(2);
-                BrandList.Add(new Brand(locID, locName, locNotes));
+                SqlGuid id = reader.GetSqlGuid(0);
+                string name = reader.GetString(1);
+                string? notes = reader.GetString(2);
+                BrandList.Add(new Brand(id, name, notes));
             }
         }
 
@@ -59,9 +59,10 @@ namespace FineWoodworkingBasic.Model
         public void PopulateViaNameAndNotes(string namePart, string notesPart)
         {
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaNameAndNotes);
-            Dictionary<string, Object> d1 = new Dictionary<string, Object>();
-            d1["name"] = namePart;
-            d1["notes"] = notesPart;
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["name"] = namePart;
+            d["notes"] = notesPart;
+            PopulateHelper(d);
         }
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> val, QC.SqlCommand command)
@@ -106,7 +107,7 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Brand WHERE ((Notes LIKE CONCAT('%', @NP1, '%') AND (Name LIKE CONCAT('%', @NP2, '%')));";
+            string query = @"SELECT * FROM Brand WHERE Notes LIKE CONCAT('%', @NP1, '%') AND Name LIKE CONCAT('%', @NP2, '%');";
 
             command.CommandText = query;
 
