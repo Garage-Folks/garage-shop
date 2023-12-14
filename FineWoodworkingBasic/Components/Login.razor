@@ -50,12 +50,27 @@
         <MudButton 
             OnClick="Submit"
             Variant="Variant.Outlined" 
-            Style="left: 125px; broder-radius: 30px;"
+            Style="left: 113px; broder-radius: 30px;"
             Class="mt-3 rounded-30"
             Color="Color.Primary" 
             Disabled="@(!Success)">
             Login
         </MudButton>
+
+        <MudContainer 
+            Fixed="true"
+            Style="display: inline-table"
+            >
+            <MudText 
+                Align="Align.Center"
+                Class="@ShowError"
+                Color="Color.Error"
+                Style="padding-top: 10px; display: table-caption; white-space: normal;"
+                >
+                    @ErrorText
+                </MudText>
+            </MudContainer>
+
     </MudForm>
    <MudPaper Elevation="0" Style="text-wrap: none; align-text: center; margin-top: 10px">
         <MudText 
@@ -81,6 +96,8 @@
     MudForm Form;
     bool Success;
     string[] Errors = {};
+    string ShowError = "invisible";
+    string ErrorText = "";
 
     AccountLogin login = new AccountLogin();
 
@@ -120,16 +137,21 @@
     {
         // Needs verification for login
         if (!string.IsNullOrWhiteSpace(EmailField.Value) && !string.IsNullOrWhiteSpace(PasswordField1.Value))
+        {
+            var user = await UserManager.FindByNameAsync(EmailField.Value);
+            if (user != null && await UserManager.CheckPasswordAsync(user, PasswordField1.Value))
             {
-                var user = await UserManager.FindByNameAsync(EmailField.Value);
-                if (user != null && await UserManager.CheckPasswordAsync(user, PasswordField1.Value))
-                {
-                    AuthenticationService.SetUser(user.UserName, user.Role);
-                    login.ToggleOverlay();
-                    ParentUpdate.InvokeAsync();
-                    ReloadPage();
-                }
+                AuthenticationService.SetUser(user.UserName, user.Role);
+                login.ToggleOverlay();
+                ParentUpdate.InvokeAsync();
+                ReloadPage();
             }
+            else
+            {
+                ErrorText = "Invalid email or password.";
+                ShowError = "visible";
+            }
+        }
 
         
     }

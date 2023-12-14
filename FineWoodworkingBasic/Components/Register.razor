@@ -43,37 +43,50 @@
             OnAdornmentClick="ShowPassword"
             AdornmentAriaLabel="Show Password"
             Required="true"
-            RequiredError="Must have an password"
+            RequiredError="Must have a password"
             Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"/>
 
         <MudTextField
             T = "string"
-            @ref="PasswordField1"
             Label="Password"
             Style="width: 300px;"
             Variant="Variant.Text"
             InputType="@PasswordInput"
-            HelperText="Retype passwordss"
+            HelperText="Retype password"
             Adornment="Adornment.End"
             AdornmentIcon="@PasswordInputIcon"
             OnAdornmentClick="ShowPassword"
             AdornmentAriaLabel="Show Password"
             Required="true"
-            RequiredError="Must have an password"
-            Validation="@(new Func<string, string>(PasswordMatch))"/>
+            RequiredError="Must have a password"
+            Validation="@(new Func<string, string?>(PasswordMatch))"/>
 
         <MudButton 
             OnClick="Submit" 
             Variant="Variant.Outlined" 
             Color="Color.Primary" 
-            Style="left: 125px; broder-radius: 30px;"
+            Style="left: 113px; broder-radius: 30px;"
             Disabled="@(!Success)"
             >
             Login
             </MudButton>
 
+        <MudContainer 
+            Fixed="true"
+            Style="display: inline-table"
+            >
+            <MudText 
+                Align="Align.Center"
+                Class="@ShowError"
+                Color="Color.Error"
+                Style="padding-top: 10px; display: table-caption; white-space: normal;"
+                >
+                @ErrorText
+                </MudText>
+            </MudContainer>
+
     </MudForm>
-           <MudPaper Elevation="0" Style="text-wrap: none; align-text: center; margin-top: 10px">
+           <MudPaper Elevation="0" Style="text-wrap: none; align-text: center; margin-top: 5px">
         <MudText 
             Typo="Typo.body1"
             Align="Align.Center"
@@ -98,6 +111,8 @@
     MudForm Form;
     bool Success;
     string[] Errors = {};
+    string ShowError = "invisible";
+    string ErrorText = "";
 
 
     // Email
@@ -131,32 +146,32 @@
 
     // Validation of Password Strength
     private IEnumerable<string> PasswordStrength(string Password)
+    {
+        if (string.IsNullOrWhiteSpace(Password))
         {
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                yield return "Password is required!";
-                yield break;
-            }
-            if (Password.Length < 8)
-            {
-                yield return "Password must be longer than 8 characters";
-            }
-            if (!Regex.IsMatch(Password, @"[A-Z]"))
-            {
-                yield return "Password must contain a uppercase letter";
-            }
-            if (!Regex.IsMatch(Password, @"[a-z]"))
-            {
-                yield return "Password must contain a lowercase letter";
-            }
-            if (!Regex.IsMatch(Password, @"[0-9]"))
-            {
-                yield return "Password must contain a number";
-            }
+            yield return "Password is required!";
+            yield break;
         }
+        if (Password.Length < 8)
+        {
+            yield return "Password must be longer than 8 characters";
+        }
+        if (!Regex.IsMatch(Password, @"[A-Z]"))
+        {
+            yield return "Password must contain a uppercase letter";
+        }
+        if (!Regex.IsMatch(Password, @"[a-z]"))
+        {
+            yield return "Password must contain a lowercase letter";
+        }
+        if (!Regex.IsMatch(Password, @"[0-9]"))
+        {
+            yield return "Password must contain a number";
+        }
+    }
 
     // Validation that passwords match
-    private string PasswordMatch(string Password)
+    private string? PasswordMatch(string Password)
     {
         if(PasswordField1.Value != Password)
         {
@@ -165,6 +180,7 @@
         return null;
     }
 
+    // Need to be updated for new user infromation
     private async void Submit()
     {
         var user = new ApplicationUser { UserName = EmailField.Value };
@@ -172,6 +188,12 @@
         if (result.Succeeded)
         {
             AuthenticationService.SetUser(user.UserName, user.Role);
+            ReloadPage();
+        }
+        else
+        {
+            ErrorText = result.Errors.First().Description;
+            ShowError = "visible";
         }
     }
 
@@ -179,5 +201,10 @@
     {
         login.ToggleRegister();
         ParentUpdate.InvokeAsync();
+    }
+
+    private void ReloadPage()
+    {
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
     }
 }

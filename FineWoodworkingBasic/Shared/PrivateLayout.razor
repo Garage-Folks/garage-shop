@@ -102,8 +102,18 @@
         _drawerOpen = !_drawerOpen;
     }
 
-    void redirect(){
-         NavManager.NavigateTo("/");
+    void redirect()
+    {
+        try
+        {
+            NavManager.NavigateTo(NavManager.BaseUri, true);
+        }
+        catch (NavigationException)
+        {
+            // Do nothing?
+            // Exception is thrown but redirect still works.
+            Console.WriteLine("NavigationException thrown.");
+        }
     }
 
     #region Icons
