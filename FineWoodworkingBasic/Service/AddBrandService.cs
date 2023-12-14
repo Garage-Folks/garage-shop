@@ -4,34 +4,17 @@ namespace FineWoodworkingBasic.Service
 {
     public class AddBrandService
     {
-        public Task<ResultMessage> AddBrandAsync(Dictionary<string, object> stateInfo, string bName, string bNotes)
+        public async Task<ResultMessage> AddBrandAsync(string bName, string bNotes)
         {
-            return Task.FromResult(AddBrandAsyncHelper(stateInfo, bName, bNotes));
+            return await Task.FromResult(AddBrandAsyncHelper(bName, bNotes));
         }
 
-        private ResultMessage AddBrandAsyncHelper(Dictionary<string, object> stateInfo, string bName, string bNotes)
+        private ResultMessage AddBrandAsyncHelper(string bName, string bNotes)
         {
-
-             bool isLoggedIn = stateInfo.ContainsKey("userName");
-
-            if (isLoggedIn == true)
-            {
-                string loggedInUserId = stateInfo["userName"].ToString();
-                FineWoodworkingBasic.Model.Brand brand = new FineWoodworkingBasic.Model.Brand(bName, bNotes);
-                brand.Save();
-                return brand.RetrieveSaveMessage();
-            }
-            else
-            {
-                return new ResultMessage(ResultMessage.ResultMessageType.Error, 
-                    "No valid credentials for this operation found!");
-            }
-            
-
-
-
+            Brand brand = new Brand(bName, bNotes);
+            brand.Save();
+            return brand.RetrieveSaveMessage();
         }
-
     }
 }
 

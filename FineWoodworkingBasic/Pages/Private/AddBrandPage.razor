@@ -6,8 +6,6 @@
 
 <PageTitle>Add a Brand</PageTitle>
 
-
-
 <h1>Please Enter a New Brand</h1>
 
 <div class="form-group row">
@@ -37,30 +35,3 @@
 <div class="@CssClass">
     <p role="status">Status: @addBrandMessage </p>
 </div>
-
-
-
-@code {
-    private string addBrandMessage { get; set; }
-    private string bName { get; set; }
-    private string bNotes { get; set; }
-
-    public string CssClass { get; set; }
-
-    private void SetBName(ChangeEventArgs changeEvent)
-    {
-        bName = (string)changeEvent.Value;
-    }
-
-    private void SetBNotes(ChangeEventArgs changeEvent)
-    {
-        bNotes = (string)changeEvent.Value;
-    }
-
-    private async void AddBrandAction()
-    {
-        ResultMessage mesg = await svc.AddBrandAsync(FullState.currentStateInfo, bName, bNotes);
-        addBrandMessage = mesg.Message;
-
-    }
-}
