@@ -165,10 +165,11 @@
         return null;
     }
 
+    // Need to be updated for new user infromation
     private async void Submit()
     {
-        var user = new ApplicationUser { UserName = EmailField.Value };
-        var result = await UserManager.CreateAsync(user, PasswordField1.Value);
+        var user = new ApplicationUser { UserName = EmailField.Value }; // Creates the user needs more arguments like email, role, etc
+        var result = await UserManager.CreateAsync(user, PasswordField1.Value); // Create the user in database needs the user information on add to database
         if (result.Succeeded)
         {
             AuthenticationService.SetUser(user.UserName, user.Role);
