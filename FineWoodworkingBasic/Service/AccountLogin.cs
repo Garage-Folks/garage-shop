@@ -1,10 +1,10 @@
 using Microsoft.Identity.Client;
 using MudBlazor;
 
+
 namespace FineWoodworkingBasic.Service;
 public class AccountLogin{
     static private bool OverlayIsOpen = false;
-    static private bool LoggedIn = false;
     static private bool Register = false;
 
     private string? LinkAddress = "/";
@@ -36,14 +36,6 @@ public class AccountLogin{
 
 
     /// <summary>
-    /// Show the login view
-    /// </summary>
-    /// <returns>True: Login in view should be visiable; otherwise should not be</returns>
-    public bool IsLoggedIn(){
-        return LoggedIn;
-    }
-
-    /// <summary>
     /// Show the registration view
     /// </summary>
     /// <returns>True: Register page should be visiable; Otherwise should not be</returns>
@@ -64,14 +56,6 @@ public class AccountLogin{
         }
     }
 
-    /// <summary>
-    /// Set if the user should be logged in or not
-    /// </summary>
-    /// <param name="LoggedInStatu">True: login user; otherwise do not login user</param>
-    public void ToggleLoggedIn(bool LoggedInStatus){
-        LoggedIn = LoggedInStatus;
-    }
-
     public void ToggleRegister()
     {
         if (Register)
@@ -82,6 +66,7 @@ public class AccountLogin{
             Register = true;
         }
     }
+
 
 
 

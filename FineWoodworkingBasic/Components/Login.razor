@@ -1,4 +1,18 @@
 ﻿@using Service
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@inject UsersTable ut
+@inject NavigationManager NavigationManager
+
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 <MudPaper Class="pa-5" Elevation="4" style="border-radius: 20px 0px 20px 20px">
@@ -102,13 +116,31 @@
         }
     }
 
-    void Submit()
+    private async void Submit()
     {
         // Needs verification for login
-        login.ToggleOverlay();
-        login.ToggleLoggedIn(true);
-        ParentUpdate.InvokeAsync();
+        if (!string.IsNullOrWhiteSpace(EmailField.Value) && !string.IsNullOrWhiteSpace(PasswordField1.Value))
+            {
+                var user = await UserManager.FindByNameAsync(EmailField.Value);
+                if (user != null && await UserManager.CheckPasswordAsync(user, PasswordField1.Value))
+                {
+                    AuthenticationService.SetUser(user.UserName, user.Role);
+                    login.ToggleOverlay();
+                    ParentUpdate.InvokeAsync();
+                    ReloadPage();
+                }
+            }
+
+        
     }
+
+    private void ReloadPage()
+    {
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+
+
+
 
     void SwitchToRegister()
     {

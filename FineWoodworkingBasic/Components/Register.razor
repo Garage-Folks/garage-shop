@@ -1,6 +1,17 @@
 @using System.Text.RegularExpressions;
 @using System.ComponentModel.DataAnnotations;
 @using Service;
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@inject UsersTable ut
+@inject NavigationManager NavigationManager
 
 
 <MudPaper Class="pa-5" Elevation="4" style="border-radius: 20px 0px 20px 20px">
@@ -62,6 +73,21 @@
             </MudButton>
 
     </MudForm>
+           <MudPaper Elevation="0" Style="text-wrap: none; align-text: center; margin-top: 10px">
+        <MudText 
+            Typo="Typo.body1"
+            Align="Align.Center"
+            Style="font-size: 15px; font-weight: 0px;">
+            Already have an account?
+
+            <MudLink
+                Color="Color.Primary"
+                Style="cursor: pointer; font-size: 15px"
+                OnClick="SwitchToLogin">
+                Click Here!
+            </MudLink>
+        </MudText>
+        </MudPaper>
 </MudPaper>
 
 @code {
@@ -139,11 +165,19 @@
         return null;
     }
 
-    void Submit() 
+    private async void Submit()
     {
-        login.ToggleLoggedIn(true);
-        login.ToggleOverlay();
+        var user = new ApplicationUser { UserName = EmailField.Value };
+        var result = await UserManager.CreateAsync(user, PasswordField1.Value);
+        if (result.Succeeded)
+        {
+            AuthenticationService.SetUser(user.UserName, user.Role);
+        }
+    }
+
+    void SwitchToLogin()
+    {
+        login.ToggleRegister();
         ParentUpdate.InvokeAsync();
-        
     }
 }

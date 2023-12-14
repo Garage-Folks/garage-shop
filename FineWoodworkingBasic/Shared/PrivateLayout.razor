@@ -1,6 +1,16 @@
 ﻿@inherits MainLayout
 
 @inject NavigationManager NavManager
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@inject UsersTable ut
 
 @using Service;
 
@@ -8,6 +18,14 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+
+<AuthorizeView>
+    <NotAuthorized>
+        @{
+            redirect();
+        }
+    </NotAuthorized>
+    <Authorized>
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton 
@@ -58,6 +76,10 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
+    </Authorized>
+</AuthorizeView>
+
+
 
 
 @code {
@@ -78,6 +100,10 @@
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    void redirect(){
+         NavManager.NavigateTo("/");
     }
 
     #region Icons
