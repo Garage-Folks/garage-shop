@@ -19,7 +19,6 @@ Utilities.EstablishConnection("C:\\Users\\nokil\\source\\repos\\garage-shop\\Fin
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 // Register the login service
-builder.Services.AddSingleton<LoginService>();
 builder.Services.AddSingleton<AddBrandService>();
 // Add the AppState class
 builder.Services.AddScoped<AllStateInfoService>();
