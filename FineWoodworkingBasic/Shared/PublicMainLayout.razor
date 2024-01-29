@@ -1,5 +1,7 @@
 ﻿@inherits MainLayout
 @inject IDialogService DialogService
+@using Service
+
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -9,32 +11,66 @@
 <div style="height: 100vh !important; width: 100vh !important; background-image: url(eric3.png) !important" />
 
 <MudAppBar Color="Color.Transparent" Elevation="0">
-    <MudButton Href="private" StartIcon="@garage" IconColor="Color.Tertiary" DisableElevation="true">
-        <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Garage Shop Woodworking</MudText>
+    <MudButton 
+        Href="private" 
+        StartIcon="@garage" 
+        IconColor="Color.Tertiary" 
+        DisableElevation="true">
+        <MudText 
+            Typo="Typo.h6" 
+            Class="px-4" 
+            Align="Align.Center" 
+            Color="Color.Inherit">
+            Garage Shop Woodworking
+            </MudText>
         </MudButton>
     <MudSpacer />
     <MudSpacer />
 
     <MudStack Row="true">
         <MudNavLink Href="/portfolio" Match="NavLinkMatch.Prefix">
-            <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Portfolio</MudText>
+            <MudText 
+                Typo="Typo.h6" 
+                Class="px-4" 
+                Align="Align.Center" 
+                Color="Color.Inherit">
+                Portfolio
+                </MudText>
         </MudNavLink>
+
         <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">
-            <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">About</MudText>
+            <MudText 
+                Typo="Typo.h6" 
+                Class="px-4" 
+                Align="Align.Center" 
+                Color="Color.Inherit">
+                About
+                </MudText>
         </MudNavLink>
-        <MudIconButton OnClick="OpenDialog" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
+
+        <MudIconButton OnClick="@ToggleOverlay" Icon="@Icons.Material.TwoTone.Login" Color="Color.Tertiary" />
+
+        <LoginServiceView Sender="UpdateParent"/>
+        
     </MudStack>
 </MudAppBar>
 
 
-@code {
-    private void OpenDialog()
-    {
-        Console.WriteLine("Button Clicked");
-        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
-        DialogService.Show<Dialog>("Please Enter Username and Password", closeOnEscapeKey);
-    }
 
+@code {
+
+    AccountLogin login = new AccountLogin();
+
+    public void UpdateParent(){
+        StateHasChanged();
+    }
+    // Shows the overlay
+    public void ToggleOverlay()
+    {
+        login.ToggleOverlay();
+        if(login.NeedsRegister()) login.ToggleRegister();
+        StateHasChanged();
+    }
 
     #region Icons
     const string garage =

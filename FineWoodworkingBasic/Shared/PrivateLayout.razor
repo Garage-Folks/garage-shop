@@ -1,21 +1,67 @@
 ﻿@inherits MainLayout
 
+@inject NavigationManager NavManager
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@inject UsersTable ut
+
+@using Service;
+
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
+
+<AuthorizeView>
+    <NotAuthorized>
+        @{
+            redirect();
+        }
+    </NotAuthorized>
+    <Authorized>
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton 
+            Icon="@Icons.Material.Filled.Menu" 
+            Color="Color.Inherit" 
+            Edge="Edge.Start" 
+            OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudButton Href="/" StartIcon="@garage" IconColor="Color.Tertiary" DisableElevation="true">
+        <MudButton 
+            Href="/" 
+            StartIcon="@garage" 
+            IconColor="Color.Tertiary" 
+            DisableElevation="true">
             @*<MudButton Href="private" StartIcon="@garage" IconColor="Color.Tertiary" DisableElevation="true">*@
-            <MudText Typo="Typo.h6" Class="px-4" Align="Align.Center" Color="Color.Inherit">Garage Shop Woodworking - Private</MudText>
+                <MudText 
+                    Typo="Typo.h6" 
+                    Class="px-4" 
+                    Align="Align.Center" 
+                    Color="Color.Inherit">
+                    Garage Shop Woodworking - Private
+                </MudText>
         </MudButton>
         <MudSpacer />
         <MudSpacer />
         <MudSpacer />
-        <MudIconButton Href="" Icon="@Icons.Material.TwoTone.Logout" Color="Color.Tertiary" />
+        <MudIconButton Icon="@Icons.Material.TwoTone.Logout" Color="Color.Tertiary" OnClick="ToggleOverlay" />
+            <MudPopover
+                Open="login.IsOverlayOpen()" 
+                Class="my-1"
+                OverflowBehavior="OverflowBehavior.FlipAlways" 
+                AnchorOrigin="Origin.BottomRight" 
+                TransformOrigin="Origin.TopRight"
+                Paper="false"
+                Duration="300">
+                <Logout ParentUpdate="UpdateParent"/>
+            </MudPopover>
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2">
         <MudDrawerHeader>
@@ -25,19 +71,39 @@
         <PrivateNavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Large" Class="my-16 pt-16">
+        <MudContainer MaxWidth="MaxWidth.Large" Class="pt-8">
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
+    </Authorized>
+</AuthorizeView>
+
+
 
 
 @code {
+
+    AccountLogin login = new AccountLogin();
     bool _drawerOpen = true;
+
+    void ToggleOverlay()
+    {
+        login.ToggleOverlay();
+    }
+
+    public void UpdateParent(){
+        NavManager.NavigateTo(login.GetLinkAddress());
+        StateHasChanged();
+    }
 
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    void redirect(){
+         NavManager.NavigateTo("/");
     }
 
     #region Icons

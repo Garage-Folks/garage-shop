@@ -1,0 +1,151 @@
+﻿@using Service
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@inject UsersTable ut
+@inject NavigationManager NavigationManager
+
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+<MudPaper Class="pa-5" Elevation="4" style="border-radius: 20px 0px 20px 20px">
+    <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
+        <MudText Typo="Typo.h1" Style="font-size: 25px; font-weight:" Align="Align.Center">Login</MudText>
+
+        <MudTextField
+            T = "string"
+            @ref="EmailField"
+            Label="Email"
+            Class="mb-2"
+            Style="width: 300px;"
+            Variant="Variant.Text"
+            Adornment="Adornment.End"
+            AdornmentIcon="@EmailIcon"
+            Required="true"
+            RequiredError="Must have an email!"/>
+
+        <MudTextField
+            T = "string"
+            @ref="PasswordField1"
+            Label="Password"
+            Class="mb-2"
+            Style="width: 300px;"
+            Variant="Variant.Text"
+            InputType="@PasswordInput"
+            Adornment="Adornment.End"
+            AdornmentIcon="@PasswordInputIcon"
+            OnAdornmentClick="ShowPassword"
+            AdornmentAriaLabel="Show Password"
+            Required="true"
+            RequiredError="Must have an password"/>
+
+
+        <MudButton 
+            OnClick="Submit"
+            Variant="Variant.Outlined" 
+            Style="left: 125px; broder-radius: 30px;"
+            Class="mt-3 rounded-30"
+            Color="Color.Primary" 
+            Disabled="@(!Success)">
+            Login
+        </MudButton>
+    </MudForm>
+   <MudPaper Elevation="0" Style="text-wrap: none; align-text: center; margin-top: 10px">
+        <MudText 
+            Typo="Typo.body1"
+            Align="Align.Center"
+            Style="font-size: 15px; font-weight: 0px;">
+            Needs to create an account?
+
+            <MudLink
+                Color="Color.Primary"
+                Style="cursor: pointer; font-size: 15px"
+                OnClick="SwitchToRegister">
+                Click Here!
+            </MudLink>
+        </MudText>
+        </MudPaper>
+        
+</MudPaper>
+
+@code
+{
+
+    MudForm Form;
+    bool Success;
+    string[] Errors = {};
+
+    AccountLogin login = new AccountLogin();
+
+    [Parameter] public EventCallback<string> ParentUpdate {get; set;}
+
+    // Email
+    MudTextField<string> EmailField;
+    string EmailIcon = Icons.Material.Filled.Email;
+
+
+    // Password
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    InputType PasswordInput = InputType.Password;
+    MudTextField<string> PasswordField1;
+    bool isShow;
+
+
+
+    // Show password on click of icon
+    void ShowPassword()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+    private async void Submit()
+    {
+        // Needs verification for login
+        if (!string.IsNullOrWhiteSpace(EmailField.Value) && !string.IsNullOrWhiteSpace(PasswordField1.Value))
+            {
+                var user = await UserManager.FindByNameAsync(EmailField.Value);
+                if (user != null && await UserManager.CheckPasswordAsync(user, PasswordField1.Value))
+                {
+                    AuthenticationService.SetUser(user.UserName, user.Role);
+                    login.ToggleOverlay();
+                    ParentUpdate.InvokeAsync();
+                    ReloadPage();
+                }
+            }
+
+        
+    }
+
+    private void ReloadPage()
+    {
+        NavigationManager.NavigateTo(NavigationManager.Uri, true);
+    }
+
+
+
+
+    void SwitchToRegister()
+    {
+        // Needs register and login functionallity
+        login.ToggleRegister();
+        ParentUpdate.InvokeAsync();
+    }
+}

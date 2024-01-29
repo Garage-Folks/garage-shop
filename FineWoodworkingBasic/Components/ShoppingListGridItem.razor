@@ -1,0 +1,45 @@
+<MudCard Elevation="25" style="border-radius: 25px;">
+    <MudCardHeader Class="pa-5">
+        <CardHeaderContent>
+            <MudText Typo="Typo.body1">@ItemName</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardMedia Height="250">Image</MudCardMedia>
+    <MudCardActions>
+        <MudSpacer/>
+        <MudText Typo="Typo.button">
+            Qt: @ItemQuantity
+        </MudText>
+        <div style="display: inline-block">
+                <div style="display: flex; flex-direction: column;">
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" OnClick="()=>IncreaseQuantity()" Size="Size.Small" />
+                <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowDown" OnClick="()=>DecreaseQuantity()" Size="Size.Small" />
+                </div>
+        </div>
+    </MudCardActions>
+</MudCard>
+
+
+@code
+{
+    [Parameter] 
+    public int ItemQuantity {get; set;}
+    [Parameter] 
+    public string ItemName {get; set;}
+
+    void IncreaseQuantity()
+    {
+        ItemQuantity++;
+        StateHasChanged();
+    }
+    void DecreaseQuantity()
+    {
+        if(ItemQuantity > 0)
+        {
+            ItemQuantity--;
+            StateHasChanged();
+        }
+    }
+}

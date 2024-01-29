@@ -1,0 +1,183 @@
+@using System.Text.RegularExpressions;
+@using System.ComponentModel.DataAnnotations;
+@using Service;
+@using FineWoodworkingBasic.Authentication;
+@using FineWoodworkingBasic.Authentication.Provider;
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.Data.SqlClient;
+@using FineWoodworkingBasic.Util;
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationService AuthenticationService
+@inject UsersTable ut
+@inject NavigationManager NavigationManager
+
+
+<MudPaper Class="pa-5" Elevation="4" style="border-radius: 20px 0px 20px 20px">
+    <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
+        <MudText Typo="Typo.h1" Style="font-size: 25px; font-weight:" Align="Align.Center">Register</MudText>
+
+        <MudTextField
+            T = "string"
+            @ref="EmailField"
+            Label="Email"
+            Style="width: 300px;"
+            Variant="Variant.Text"
+            Adornment="Adornment.End"
+            AdornmentIcon="@EmailIcon"
+            Required="true"
+            RequiredError="Must have an email!"
+            Validation="@(new EmailAddressAttribute() {ErrorMessage = "Email is invalid"})"/>
+
+        <MudTextField
+            T = "string"
+            @ref="PasswordField1"
+            Label="Password"
+            Style="width: 300px;"
+            Variant="Variant.Text"
+            InputType="@PasswordInput"
+            HelperText="Please input a strong password"
+            Adornment="Adornment.End"
+            AdornmentIcon="@PasswordInputIcon"
+            OnAdornmentClick="ShowPassword"
+            AdornmentAriaLabel="Show Password"
+            Required="true"
+            RequiredError="Must have an password"
+            Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"/>
+
+        <MudTextField
+            T = "string"
+            @ref="PasswordField1"
+            Label="Password"
+            Style="width: 300px;"
+            Variant="Variant.Text"
+            InputType="@PasswordInput"
+            HelperText="Retype passwordss"
+            Adornment="Adornment.End"
+            AdornmentIcon="@PasswordInputIcon"
+            OnAdornmentClick="ShowPassword"
+            AdornmentAriaLabel="Show Password"
+            Required="true"
+            RequiredError="Must have an password"
+            Validation="@(new Func<string, string>(PasswordMatch))"/>
+
+        <MudButton 
+            OnClick="Submit" 
+            Variant="Variant.Outlined" 
+            Color="Color.Primary" 
+            Style="left: 125px; broder-radius: 30px;"
+            Disabled="@(!Success)"
+            >
+            Login
+            </MudButton>
+
+    </MudForm>
+           <MudPaper Elevation="0" Style="text-wrap: none; align-text: center; margin-top: 10px">
+        <MudText 
+            Typo="Typo.body1"
+            Align="Align.Center"
+            Style="font-size: 15px; font-weight: 0px;">
+            Already have an account?
+
+            <MudLink
+                Color="Color.Primary"
+                Style="cursor: pointer; font-size: 15px"
+                OnClick="SwitchToLogin">
+                Click Here!
+            </MudLink>
+        </MudText>
+        </MudPaper>
+</MudPaper>
+
+@code {
+
+    AccountLogin login = new AccountLogin();
+    [Parameter] public EventCallback<string> ParentUpdate {get; set;}
+
+    MudForm Form;
+    bool Success;
+    string[] Errors = {};
+
+
+    // Email
+    MudTextField<string> EmailField;
+    string EmailIcon = Icons.Material.Filled.Email;
+
+
+    // Password
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    InputType PasswordInput = InputType.Password;
+    MudTextField<string> PasswordField1;
+    bool isShow;
+
+
+    // Show password on click of icon
+    void ShowPassword()
+    {
+        if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+
+    // Validation of Password Strength
+    private IEnumerable<string> PasswordStrength(string Password)
+        {
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                yield return "Password is required!";
+                yield break;
+            }
+            if (Password.Length < 8)
+            {
+                yield return "Password must be longer than 8 characters";
+            }
+            if (!Regex.IsMatch(Password, @"[A-Z]"))
+            {
+                yield return "Password must contain a uppercase letter";
+            }
+            if (!Regex.IsMatch(Password, @"[a-z]"))
+            {
+                yield return "Password must contain a lowercase letter";
+            }
+            if (!Regex.IsMatch(Password, @"[0-9]"))
+            {
+                yield return "Password must contain a number";
+            }
+        }
+
+    // Validation that passwords match
+    private string PasswordMatch(string Password)
+    {
+        if(PasswordField1.Value != Password)
+        {
+            return "Passwords do not match";
+        }
+        return null;
+    }
+
+    private async void Submit()
+    {
+        var user = new ApplicationUser { UserName = EmailField.Value };
+        var result = await UserManager.CreateAsync(user, PasswordField1.Value);
+        if (result.Succeeded)
+        {
+            AuthenticationService.SetUser(user.UserName, user.Role);
+        }
+    }
+
+    void SwitchToLogin()
+    {
+        login.ToggleRegister();
+        ParentUpdate.InvokeAsync();
+    }
+}

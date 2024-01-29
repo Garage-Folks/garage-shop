@@ -4,6 +4,7 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -18,7 +19,7 @@ namespace FineWoodworkingBasic.Model
         public BrandCollection()
         {
             BrandList = new List<Brand>();
-            QueryMethod = QueryConstructorViaName;
+            QueryMethod = QueryConstructorAll;
         }
 
         // Fully helper methods
@@ -26,13 +27,19 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                int locID = reader.GetInt32(0);
-                string locName = reader.GetString(1);
-                string locNotes = reader.GetString(2);
-                BrandList.Add(new Brand(locID, locName, locNotes));
+                SqlGuid id = reader.GetSqlGuid(0);
+                string name = reader.GetString(1);
+                string? notes = reader.GetString(2);
+                BrandList.Add(new Brand(id, name, notes));
             }
         }
 
+        public void PopulateAll()
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorAll);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            PopulateHelper(d);
+        }
 
         public void PopulateViaName(string namePart)
         {
@@ -49,10 +56,25 @@ namespace FineWoodworkingBasic.Model
             d["notes"] = notesPart;
             PopulateHelper(d);
         }
+        public void PopulateViaNameAndNotes(string namePart, string notesPart)
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaNameAndNotes);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["name"] = namePart;
+            d["notes"] = notesPart;
+            PopulateHelper(d);
+        }
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> val, QC.SqlCommand command)
         {
             QueryMethod(val, command);
+        }
+
+        protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
+        {
+            string query = @"SELECT * FROM Brand";
+
+            command.CommandText = query;
         }
 
         protected virtual void QueryConstructorViaName(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
@@ -79,6 +101,22 @@ namespace FineWoodworkingBasic.Model
 
             parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
             parameter.Value = dictNotesPart["notes"];
+            command.Parameters.Add(parameter);
+        }
+        protected virtual void QueryConstructorViaNameAndNotes(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+
+            string query = @"SELECT * FROM Brand WHERE Notes LIKE CONCAT('%', @NP1, '%') AND Name LIKE CONCAT('%', @NP2, '%');";
+
+            command.CommandText = query;
+
+            parameter = new QC.SqlParameter("@NP1", DT.SqlDbType.NVarChar, 1000);
+            parameter.Value = dictNotesPart["notes"];
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@NP2", DT.SqlDbType.NVarChar, 100); 
+            parameter.Value = dictNotesPart["name"];
             command.Parameters.Add(parameter);
         }
 

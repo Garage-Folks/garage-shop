@@ -1,0 +1,41 @@
+<MudPaper Class="mb-4" style="border-radius: 15px;" Elevation="25">
+    <MudGrid>
+        <MudItem xs="10" Class="d-flex flex-column align-left justify-center mud-width-full pa-2">
+            <MudText Class="ml-5" Typo="Typo.body1">@ItemName</MudText>
+        </MudItem>
+        <MudItem xs="2" Class="d-flex align-left justify-center mud-width-full pa-2">
+                <MudText Class="my-3 mx-2" Typo="Typo.button">
+                    Qt: @ItemQuantity
+                </MudText>
+                <div style="display: inline-block">
+                    <div style="display: flex; flex-direction: column;">
+                        <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" OnClick="()=>IncreaseQuantity()" Size="Size.Small" />
+                        <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowDown" OnClick="()=>DecreaseQuantity()" Size="Size.Small" />
+                    </div>
+                </div>
+            </MudItem>
+        </MudGrid>
+</MudPaper>
+
+
+@code
+{
+    [Parameter] 
+    public int ItemQuantity {get; set;}
+    [Parameter] 
+    public string ItemName {get; set;}
+
+    void IncreaseQuantity()
+    {
+        ItemQuantity++;
+        StateHasChanged();
+    }
+    void DecreaseQuantity()
+    {
+        if(ItemQuantity > 0)
+        {
+            ItemQuantity--;
+            StateHasChanged();
+        }
+    }
+}

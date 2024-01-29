@@ -1,0 +1,50 @@
+<EditForm Model="@Item" OnValidSubmit="AddFilter" style="left: 100px">
+    <MudTextField 
+        T="string" 
+        @bind-Value="@Item.Value"
+        Label="Filter"
+        Variant="Variant.Outlined" 
+        style="width: 300px; " 
+        HelperText="Press enter to add filter" 
+        HelperTextOnFocus="true"
+        TextUpdateSuppression="false"
+        OnKeyDown="AddFilter"/>
+</EditForm>
+<MudChipSet AllClosable="true" Class="pa-4" OnClose="Closed">
+    @foreach(var filter in FiltersList)
+    {
+        <MudChip Text="@filter" Variant="Variant.Outlined" Color="Color.Primary"></MudChip>
+    }
+</MudChipSet>
+
+
+@code
+{
+
+    public class FilterItem
+    {
+        public string Value {get; set;} = default!;
+    }
+
+    // List of all the filters
+    List<string> FiltersList = new List<string>();
+
+    // Current Filter item being made
+    FilterItem Item =  new FilterItem();
+
+
+    // On enter press of field adds the current typed filter
+    private void AddFilter() 
+    {
+            if(!string.IsNullOrWhiteSpace(Item.Value)){
+                FiltersList.Add(Item.Value);
+            }
+            Item.Value = "";
+            StateHasChanged();
+    }
+
+    // Deletes filter that was pressed
+    public void Closed(MudChip chip) => FiltersList.Remove(chip.Text);
+
+
+}

@@ -1,10 +1,42 @@
-﻿<MudNavMenu Rounded="true" Color="Color.Info" Bordered="true" Margin="Margin.Dense">
-    <MudNavLink Href="private" Match="NavLinkMatch.All" Icon="@Icons.Material.TwoTone.Home" IconColor="Color.Tertiary">Home</MudNavLink>
-    <MudNavLink Href="private/account" Match="NavLinkMatch.All" Icon="@Icons.Material.TwoTone.ManageAccounts" IconColor="Color.Tertiary">Account</MudNavLink>
-    <MudNavGroup Title="Inventory" Icon="@Icons.Material.TwoTone.Inventory2" IconColor="Color.Tertiary" HideExpandIcon="true">
-        <MudNavLink Href="private/inventory" Match="NavLinkMatch.Prefix">Search Here?</MudNavLink>
-        <MudNavLink Href="private/inventory/manage" Match="NavLinkMatch.Prefix">Manage Inventory</MudNavLink>
-        <MudNavLink Href="private/inventory/shopping-list" Match="NavLinkMatch.Prefix">Create Shopping List</MudNavLink>
-    </MudNavGroup>
-    <MudNavLink Href="" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Calculate" IconColor="Color.Tertiary" Disabled="true">Calculators</MudNavLink>
+﻿<MudNavMenu 
+    Rounded="true" 
+    Color="Color.Info" 
+    Bordered="true" 
+    Margin="Margin.Dense">
+
+        <MudNavLink 
+            Href="private" 
+            Match="NavLinkMatch.All" 
+            Icon="@Icons.Material.TwoTone.Home" 
+            IconColor="Color.Tertiary">
+            Home
+        </MudNavLink>
+
+        <MudNavLink 
+            Href="private/account" 
+            Match="NavLinkMatch.All" 
+            Icon="@Icons.Material.TwoTone.ManageAccounts" 
+            IconColor="Color.Tertiary">
+            Account
+        </MudNavLink>
+
+        <MudNavGroup 
+            Title="Inventory" 
+            Icon="@Icons.Material.TwoTone.Inventory2" 
+            IconColor="Color.Tertiary" 
+            HideExpandIcon="true">
+                <MudNavLink Href="private/inventory" Match="NavLinkMatch.Prefix">Search Here?</MudNavLink>
+                <MudNavLink Href="private/inventory/manage" Match="NavLinkMatch.Prefix">Manage Inventory</MudNavLink>
+                <MudNavLink Href="private/inventory/shopping-list" Match="NavLinkMatch.Prefix">Shopping List</MudNavLink>
+        </MudNavGroup>
+
+        <MudNavLink 
+            Href="" 
+            Match="NavLinkMatch.Prefix" 
+            Icon="@Icons.Material.TwoTone.Calculate" 
+            IconColor="Color.Tertiary" 
+            Disabled="true">
+            Calculators
+            </MudNavLink>
+            
 </MudNavMenu>

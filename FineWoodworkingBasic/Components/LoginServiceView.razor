@@ -1,0 +1,44 @@
+@using Service;
+
+<AuthorizeView>
+<NotAuthorized>
+        <MudPopover
+            Open=login.IsOverlayOpen()
+            OverflowBehavior="OverflowBehavior.FlipAlways" 
+            AnchorOrigin="Origin.BottomRight" 
+            TransformOrigin="Origin.TopRight" 
+            Paper="false" 
+            Duration="300">
+            <Login ParentUpdate="Sender"/>
+        </MudPopover>
+@if (login.NeedsRegister())
+    {
+        <MudPopover
+            Open="login.IsOverlayOpen()" 
+            OverflowBehavior="OverflowBehavior.FlipAlways" 
+            AnchorOrigin="Origin.BottomRight" 
+            TransformOrigin="Origin.TopRight" 
+            Paper="false" 
+            Duration="300">
+            <Register ParentUpdate="Sender"/>
+        </MudPopover>
+    }
+</NotAuthorized>
+<Authorized>
+        <MudPopover
+            Open="login.IsOverlayOpen()" 
+            OverflowBehavior="OverflowBehavior.FlipAlways" 
+            AnchorOrigin="Origin.BottomRight" 
+            TransformOrigin="Origin.TopRight"
+            Paper="false"
+            Duration="300">
+            <Logout ParentUpdate="Sender"/>
+        </MudPopover>
+</Authorized>
+</AuthorizeView>
+
+@code {
+    AccountLogin login = new AccountLogin();
+
+    [Parameter] public EventCallback<string> Sender {get; set;}
+}
