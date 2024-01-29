@@ -6,7 +6,7 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Utilities.EstablishConnection("C:\\Users\\emr19\\source\\repos\\garage-shop\\FineWoodworkingBasic\\dbConfig.ini");
+Utilities.EstablishConnection("dbConfig.ini");
 
 // Add services to the container.
 builder.Services.AddRazorPages();
