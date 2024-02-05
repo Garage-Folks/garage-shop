@@ -4,6 +4,7 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Security.Cryptography.X509Certificates;
 using System.Data.SqlTypes;
+using MudBlazor;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -172,7 +173,8 @@ namespace FineWoodworkingBasic.Model
 
         public override string ToString()
         {
-            return "ID: " + ID + "; Name: " + Name + "; Notes: " + Notes + " ";
+            return "\nBrand\n----------\n" +
+            $"   Name: {Name}\n   Notes: {Notes}";
         }
 
     }

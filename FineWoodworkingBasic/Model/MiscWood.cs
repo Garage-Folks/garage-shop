@@ -3,6 +3,7 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Data.SqlTypes;
+using MudBlazor;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -246,7 +247,10 @@ namespace FineWoodworkingBasic.Model
 
         public override string ToString()
         {
-            return "ID: " + ID + "; Name: " + Name + "; Notes: " + Notes + " ";
+            return "\nMisc Wood\n----------\n" +
+                   $"   Name: {Name}\n   Quantity: {Quantity}" +
+                   $"\n----------\n" +
+                   $"   Species Description: {SpeciesDesc}";
         }
 
     }

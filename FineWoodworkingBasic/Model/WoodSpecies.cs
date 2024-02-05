@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using static Azure.Core.HttpHeader;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using MudBlazor;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -202,10 +203,11 @@ namespace FineWoodworkingBasic.Model
                 " from database!");
             return mesg;
         }
-      
+
         public override string ToString()
         {
-            return "ID: " + ID + "; Name: " + Name + "; Notes: " + Notes + " ";
+            return "\nWood Species\n----------\n" +
+                   $"   Name: {Name}\n   Notes: {Notes}";
         }
 
     }

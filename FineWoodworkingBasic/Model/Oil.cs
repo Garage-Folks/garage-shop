@@ -250,5 +250,13 @@ namespace FineWoodworkingBasic.Model
             command.Parameters.Add(parameter);
         }
 
+        public override string ToString()
+        {
+            return "\nOil\n----------\n" +
+                   $"   Name: {Name}\n   Quantity: {Quantity}" +
+                   $"\n----------\n" +
+                   $"   Nature: {Nature}";
+        }
+
     }
 }

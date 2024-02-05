@@ -259,7 +259,10 @@ namespace FineWoodworkingBasic.Model
 
         public override string ToString()
         {
-            return "ID: " + ID + "; Name: " + Name + "; Notes: " + Notes + " ";
+            return "\nLog\n----------\n" +
+                   $"   Name: {Name}\n   Quantity: {Quantity}" +
+                   $"\n----------\n" +
+                   $"   Length: {Length}\n   Diameter: {Diameter}";
         }
 
     }
