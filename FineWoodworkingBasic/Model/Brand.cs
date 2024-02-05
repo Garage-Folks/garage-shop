@@ -39,6 +39,7 @@ namespace FineWoodworkingBasic.Model
             Name = nm;
             Notes = nts;
         }
+
         public void Populate(SqlGuid idToUse)
         {
             string IDStr = idToUse + "";
@@ -65,9 +66,9 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                ID = reader.GetSqlGuid(0);
-                Name = reader.GetString(1);
-                Notes = reader.GetString(2);
+                ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
+                Name = reader.GetString(reader.GetOrdinal("Name"));
+                Notes = reader.GetString(reader.GetOrdinal("Notes"));
             }
         }
 
