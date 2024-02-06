@@ -184,6 +184,7 @@ CREATE TABLE AuthorizedUser (
     ID uniqueidentifier DEFAULT (NEWID()) PRIMARY KEY,
     Username nVARCHAR(50) UNIQUE,
     Password nVARCHAR(MAX),
-    Email nVARCHAR(100) UNIQUE,
-    Notes nVARCHAR(2000)
+    Email nVARCHAR(100),
+    Notes nVARCHAR(2000),
+    Role nVARCHAR(10)
 );

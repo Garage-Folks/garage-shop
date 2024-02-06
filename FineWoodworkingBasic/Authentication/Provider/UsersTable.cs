@@ -9,6 +9,7 @@ using static MudBlazor.CategoryTypes;
 using Microsoft.VisualBasic;
 using System.Reflection.Metadata;
 using System.Data.Common;
+using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Authentication.Provider
 {
@@ -39,17 +40,21 @@ namespace FineWoodworkingBasic.Authentication.Provider
 
                 SqlParameter parameter;
 
-                string sql = "INSERT INTO AuthorizedUser (Username, Password) " +
+                string sql = "INSERT INTO AuthorizedUser (Username, Password, Role) " +
                     " OUTPUT INSERTED.ID " +
-                    " VALUES (@UserName, @Password);";
+                    " VALUES (@UserName, @Password, @Role);";
                 command.CommandText = sql;
 
-                parameter = new SqlParameter("@UserName", SqlDbType.NVarChar, 100);  // Fix Type and Length 
+                parameter = new SqlParameter("@UserName", SqlDbType.NVarChar, 50);  // Fix Type and Length 
                 parameter.Value = user.UserName;
                 command.Parameters.Add(parameter);
 
-                parameter = new SqlParameter("@Password", SqlDbType.NVarChar, 100);  // Fix Type and Length 
+                parameter = new SqlParameter("@Password", SqlDbType.NVarChar);  // Fix Type and Length 
                 parameter.Value = user.PasswordHash;
+                command.Parameters.Add(parameter);
+
+                parameter = new SqlParameter("@Role", SqlDbType.NVarChar);  // Fix Type and Length 
+                parameter.Value = "User";
                 command.Parameters.Add(parameter);
 
                 rows = await command.ExecuteNonQueryAsync();
@@ -84,9 +89,11 @@ namespace FineWoodworkingBasic.Authentication.Provider
             _connection.Open();
 
             SqlDataReader reader;
-            int ID;
+            SqlGuid ID;
             string UN;
             string PH;
+            string? EM;
+            string? N;
             string R;
 
             using (var command = new SqlCommand())
@@ -107,14 +114,16 @@ namespace FineWoodworkingBasic.Authentication.Provider
 
                 if (reader.Read())
                 {
-                    ID = reader.GetInt32(0);
+                    ID = reader.GetSqlGuid(0);
                     UN = reader.GetString(1);
                     PH = reader.GetString(2);
-                    R = reader.GetString(3);
+                    EM = reader.IsDBNull(3) ? null : reader.GetString(3);
+                    N = reader.IsDBNull(4) ? null : reader.GetString(4);
+                    R = reader.IsDBNull(5) ? "User" : reader.GetString(5);
 
                     _connection.Close();
 
-                    return new ApplicationUser { Id = ID, UserName = UN, PasswordHash = PH, Role = R };
+                    return new ApplicationUser { Id = ID, UserName = UN, PasswordHash = PH, Email = EM, Notes = N, Role = R };
                 }
 
                 _connection.Close();
@@ -131,7 +140,7 @@ namespace FineWoodworkingBasic.Authentication.Provider
                 command.CommandType = CommandType.Text;
 
                 string sql = "CREATE TABLE dbo.AuthorizedUser(" +
-                            "ID INT NOT NULL IDENTITY(1,1) PRIMARY KEY," +
+                            "ID uniqueidentifier NOT NULL IDENTITY(1,1) PRIMARY KEY," +
                             "Username NVARCHAR(50) NOT NULL," +
                             "Password NVARCHAR(MAX) NOT NULL, " +
                             "Role NVARCHAR(50) NOT NULL DEFAULT 'User');";
@@ -156,7 +165,7 @@ namespace FineWoodworkingBasic.Authentication.Provider
                 command.CommandType = CommandType.Text;
 
                 string sql = "CREATE TABLE dbo.Roles(" +
-                            "ID INT NOT NULL PRIMARY KEY," +
+                            "ID uniqueidentifier NOT NULL PRIMARY KEY," +
                             "Name NVARCHAR(50) NOT NULL );" +
                             "INSERT INTO [dbo].[Roles] VALUES (1, 'User');" +
                             "INSERT INTO [dbo].[Roles] VALUES (2, 'Admin');";
