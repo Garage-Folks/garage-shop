@@ -40,17 +40,33 @@ namespace FineWoodworkingBasic.Model
             PopulateHelper(d);
         }
 
-       
 
-   /*     public void PopulateViaLocationAreaLocus(string areaPart, string locusPart)
-        {
-            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaLocationAreaLocus);
+        public void PopulateViaArea(string areaPart)
+         {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaArea);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["area"] = areaPart;
+            PopulateHelper(d);
+         }
+
+
+        public void PopulateViaAreaLocus(string areaPart, string locusPart)
+        { 
+            QueryMethod = new PopulateQueryMethodType (QueryConstructorViaAreaLocus);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
             d["area"] = areaPart;
             d["locus"] = locusPart;
             PopulateHelper(d);
-        }*/
-    
+        }
+
+        public void PopulateViaLocationConstraint(string constraintID)
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaLocationConstraint);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["CONSTRAINTID"] = constraintID;
+            PopulateHelper(d);
+        }
+
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> val, QC.SqlCommand command)
         {
@@ -64,18 +80,30 @@ namespace FineWoodworkingBasic.Model
             command.CommandText = query;
         }
 
-       /*
-        protected virtual void QueryConstructorViaLocationAreaLocus(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
+        
+        protected virtual void QueryConstructorViaArea(Dictionary<string, Object> dictAreaPart, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM LocationConstraint 
-                             INNER JOIN Location 
-                             INNER JOIN ConstraintOfLocation 
-                             ON (LocationConstraint.ID = ConstraintOfLocation.ConstraintID) 
-                             AND (ConstraintOfLocation.LocationID = Location.ID) 
-                             AND (Location.Area LIKE CONCAT('%', @AREA, '%')) 
-                             AND (Location.Locus LIKE CONCAT('%', @LOCUS, '%'));";
+            string query = @"SELECT * FROM Location 
+                            WHERE (Location.Area LIKE CONCAT('%', @AREA, '%'));";
+
+            command.CommandText = query;
+
+            parameter = new QC.SqlParameter("@AREA", DT.SqlDbType.NVarChar, 10);  // Fix Type and Length 
+            parameter.Value = dictAreaPart["area"];
+            command.Parameters.Add(parameter);
+        }
+
+
+        
+        protected virtual void QueryConstructorViaAreaLocus(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+
+            string query = @"SELECT * FROM Location 
+                             WHERE ((Location.Area LIKE CONCAT('%', @AREA, '%')) 
+                             AND (Location.Locus LIKE CONCAT('%', @LOCUS, '%')));";
 
             command.CommandText = query;
 
@@ -86,9 +114,27 @@ namespace FineWoodworkingBasic.Model
             parameter = new QC.SqlParameter("@LOCUS", DT.SqlDbType.NVarChar, 25);  // Fix Type and Length 
             parameter.Value = dictNamePart["locus"];
             command.Parameters.Add(parameter);
-        } */
+        } 
         
-        
+        protected virtual void QueryConstructorViaLocationConstraint(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
+        {
+             QC.SqlParameter parameter;
+
+             string query = @"SELECT * FROM Location 
+	                        INNER JOIN ConstraintOfLocation 
+	                        ON (Location.ID = ConstraintOfLocation.LocationID)
+                            INNER JOIN LocationConstraint
+                            ON (LocationConstraint.ID = ConstraintOfLocation.ConstraintID)                              
+                            WHERE (LocationConstraint.ID = @CONSTRAINTID);";
+
+             command.CommandText = query;
+
+             parameter = new QC.SqlParameter("@CONSTRAINTID", DT.SqlDbType.NVarChar, 10);  // Fix Type and Length 
+             parameter.Value = dictNamePart["CONSTRAINTID"];
+             command.Parameters.Add(parameter);
+        } 
+
+
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
