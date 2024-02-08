@@ -95,12 +95,12 @@ namespace FineWoodworkingBasic.Model
             QC.SqlParameter parameter;
 
             string query = @"SELECT * FROM LocationConstraint 
-                             INNER JOIN Location 
                              INNER JOIN ConstraintOfLocation 
                              ON (LocationConstraint.ID = ConstraintOfLocation.ConstraintID) 
-                             AND (ConstraintOfLocation.LocationID = Location.ID) 
-                             AND (Location.Area LIKE CONCAT('%', @AREA, '%')) 
-                             AND (Location.Locus LIKE CONCAT('%', @LOCUS, '%'));";
+                             INNER JOIN Location 
+                             ON (ConstraintOfLocation.LocationID = Location.ID) 
+                             WHERE ((Location.Area LIKE CONCAT('%', @AREA, '%')) 
+                             AND (Location.Locus LIKE CONCAT('%', @LOCUS, '%')));";
 
             command.CommandText = query;
 
