@@ -50,7 +50,7 @@
                 @bind-Value="model.Notes" Validation="@(new Func<string, IEnumerable<string>>(MaxTwoThouCharacters))"/>       
         </MudCardContent>
         <MudCardActions>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Success">
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
             @if (spin)
             {
                 <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
