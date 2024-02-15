@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="ini-parser" Version="2.5.2" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
-    <PackageReference Include="MudBlazor" Version="6.10.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+    <PackageReference Include="MudBlazor" Version="6.15.0" />
   </ItemGroup>
 
 </Project>
