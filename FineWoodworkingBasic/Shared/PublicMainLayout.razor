@@ -10,6 +10,7 @@
 @* Broke the background image but I'm looking into it *@
 <div style="height: 100vh !important; width: 100vh !important; background-image: url(eric3.png) !important" />
 
+<MudLayout>
 <MudAppBar Color="Color.Transparent" Elevation="0">
     <MudButton 
         Href="private" 
@@ -54,7 +55,10 @@
         
     </MudStack>
 </MudAppBar>
-
+<MudMainContent>    
+    @Body
+</MudMainContent>
+</MudLayout>
 
 
 @code {

@@ -1,11 +1,14 @@
 ﻿@page "/addBrand"
 @using FineWoodworkingBasic.Service
 @using FineWoodworkingBasic.Model
+@using System.ComponentModel.DataAnnotations
 @inject AddBrandService svc
 @inject AllStateInfoService FullState
 
 <PageTitle>Add a Brand</PageTitle>
 
+
+@*
 <h1>Please Enter a New Brand</h1>
 
 <div class="form-group row">
@@ -35,3 +38,30 @@
 <div class="@CssClass">
     <p role="status">Status: @addBrandMessage </p>
 </div>
+*@
+
+<EditForm Model="model" OnValidSubmit="OnValidSubmit" >
+<DataAnnotationsValidator/>
+    <MudCard>
+        <MudCardContent>
+            <MudTextField T="string" Label="Brand name" Counter="50" Immediate="true" Variant="Variant.Text"
+                @bind-Value="model.Name" Validation="@(new Func<string, IEnumerable<string>>(MaxFiftyCharacters))"/>
+            <MudTextField T="string" Label="Notes" Counter="2000" Immediate="true" Variant="Variant.Text" Lines="3"
+                @bind-Value="model.Notes" Validation="@(new Func<string, IEnumerable<string>>(MaxTwoThouCharacters))"/>       
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Success">
+            @if (spin)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            }
+            else
+            {
+                <MudText>Add new Brand</MudText>
+            }
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+<MudText>@addBrandMessage</MudText>
