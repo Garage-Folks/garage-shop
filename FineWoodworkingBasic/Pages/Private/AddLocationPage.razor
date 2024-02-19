@@ -1,0 +1,92 @@
+﻿@page "/add-location"
+@using FineWoodworkingBasic.Service
+@using FineWoodworkingBasic.Model
+@using System.ComponentModel.DataAnnotations
+@inject AddLocationService svc
+@inject AllStateInfoService FullState
+
+<PageTitle>Add Location</PageTitle>
+<h1>Add a new Location</h1>
+<EditForm Model="@model">
+    <MudCard @ontouchenter="AddLocation">
+        <MudStack>
+            <MudCardContent>
+                <MudSelect T="string?" @bind-Value="Area" Variant="Variant.Outlined" Label="Area" AnchorOrigin="Origin.BottomCenter" @onchange="SetArea" Required="true">
+                    @foreach (Location location in PopulateAreaList())
+                    {
+                        <MudSelectItem Value="location.Area">@location.Area</MudSelectItem>
+                     
+                    }
+
+                </MudSelect>
+                <MudTextField @bind-Value="Area" Label="Area" Variant="Variant.Outlined"></MudTextField>
+            </MudCardContent>
+            <MudSpacer/>
+            <MudCardContent>
+                @*<MudSelect T="string?" @bind-Value="Locus" Variant="Variant.Outlined" Label="Locus" AnchorOrigin="Origin.BottomCenter" @onchange="SetLocus">
+                    @foreach (Location location in locusViaAreaList)
+                    {
+                        <MudSelectItem Value="@location.Locus" />
+                    }
+
+                </MudSelect>*@
+                <MudTextField @bind-Value="Locus" Label="Locus" Variant="Variant.Outlined"></MudTextField>
+            </MudCardContent>
+            <MudStack Row="true">
+                <MudButton Class="pa-3" @onclick="AddLocation" @ontouchenter="AddLocation">Add Location</MudButton>
+                <MudButton Class="pa-3">Cancel</MudButton>
+            </MudStack>
+        </MudStack>
+    </MudCard>
+</EditForm>
+
+<p role="status">Status: @addLocationMessage</p>
+
+@code {
+    Location location = new Location();
+    List<Location> locusViaAreaList = new List<Location>();
+
+    private string addLocationMessage { get; set; }
+    private string Area { get; set; }
+    private string Locus { get; set; }
+
+    AddLocationForm model = new AddLocationForm();
+
+    private void SetArea(ChangeEventArgs changeEvent)
+    {
+        Area = (string)changeEvent.Value;
+    }
+
+    private void SetLocus(ChangeEventArgs changeEvent)
+    {
+        Locus = (string)changeEvent.Value;
+    }
+
+    private List<Location> PopulateAreaList()
+    {
+        LocationCollection allLocationCollection = new LocationCollection();
+        allLocationCollection.PopulateAll();
+        List<Location> areaList = allLocationCollection.LocationList;
+        return areaList;
+    }
+    private void PopulateLocusListViaArea()
+    {
+        LocationCollection areaLocationCollection = new LocationCollection();
+        areaLocationCollection.PopulateViaArea(Area);
+        locusViaAreaList = areaLocationCollection.LocationList;
+    }
+    private async void AddLocation()
+    {
+        ResultMessage retMsg = await svc.AddLocationAsync(Area, Locus);
+        addLocationMessage = retMsg.Message;
+    }
+    public class AddLocationForm
+    {
+        [Required]
+        [StringLength(10, ErrorMessage = "Area length can't be more than 10.")]
+        public string FormArea { get; set; }
+        [Required]
+        [StringLength(25, ErrorMessage = "Locus length can't be more than 25.")]
+        public string FormLocus { get; set; }
+    }
+}

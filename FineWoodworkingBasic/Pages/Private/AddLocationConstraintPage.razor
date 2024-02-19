@@ -1,0 +1,55 @@
+﻿@page "/add-location-constraint"
+@using FineWoodworkingBasic.Service
+@using FineWoodworkingBasic.Model
+@using System.ComponentModel.DataAnnotations
+@inject AddLocationConstraintService svc
+@inject AllStateInfoService FullState
+
+<PageTitle>Add Location Constraint</PageTitle>
+<h1>Add a new Location Constraint</h1>
+<EditForm Model="@model">
+    <MudCard>
+        <MudStack>
+            <MudCardContent>
+                <MudTextField @bind-Value="Description" Label="Description" Variant="Variant.Outlined" AutoGrow></MudTextField>
+            </MudCardContent>
+            <MudSpacer />
+            <MudStack Row="true">
+                <MudButton Class="pa-3" @onclick="AddLocationConstraint" @ontouchenter="AddLocationConstraint">Add Location Constraint</MudButton>
+                <MudButton Class="pa-3" @onclick="Cancel">Cancel</MudButton>
+            </MudStack>
+        </MudStack>
+    </MudCard>
+</EditForm>
+
+<p role="status">Status: @addLocationConstraintMessage</p>
+
+@code {
+    Location location = new Location();
+    List<Location> locusViaAreaList = new List<Location>();
+
+    private string addLocationConstraintMessage { get; set; }
+    private string Description { get; set; }
+
+    AddLocationConstraintForm model = new AddLocationConstraintForm();
+
+    private void SetDescription(ChangeEventArgs changeEvent)
+    {
+        Description = (string)changeEvent.Value;
+    }
+
+    private async void AddLocationConstraint()
+    {
+        String retMsg = await svc.AddLocationConstraintAsync(Description);
+        addLocationConstraintMessage = retMsg;
+    }
+    public void Cancel()
+    {
+    }
+    public class AddLocationConstraintForm
+    {
+        [Required]
+        [StringLength(2000, ErrorMessage = "Description length can't be more than 2000.")]
+        public string Description { get; set; }
+    }
+}

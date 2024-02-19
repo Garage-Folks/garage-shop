@@ -1,0 +1,106 @@
+﻿@page "/add-lumber"
+@using FineWoodworkingBasic.Service
+@using FineWoodworkingBasic.Model
+@using System.ComponentModel.DataAnnotations
+@inject AddLumberService svc
+@inject AllStateInfoService FullState
+
+<PageTitle>Add Lumber</PageTitle>
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardHeader>Add Lumber</MudCardHeader>
+        <MudStack>
+            <MudCardContent>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudTextField @bind-Value="model.Name" Label="Name" Variant="Variant.Outlined" For="@(() => model.Name)"></MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudAutocomplete T="string" @bind-Value="model.WoodSpecies" Variant="Variant.Outlined" Label="Wood Species" AnchorOrigin="Origin.BottomCenter"
+                                      SearchFunc="@SearchLumber" For="@(() => model.WoodSpecies)" MaxItems="@woodSpeciesCollectionSize" />
+                </MudItem>
+                <MudItem xs="12" sm="6" md="4">
+                    <MudNumericField @bind-Value="model.Quantity" Label="Quantity" Variant="Variant.Outlined" Min="1" MaxLength="5"/>
+                </MudItem>
+                <MudStack Row="true">
+                    <MudNumericField @bind-Value="model.Length" Label="Length" Variant="Variant.Outlined" Min="0" MaxLength="7"/>
+                    <MudNumericField @bind-Value="model.Width" Label="Width" Variant="Variant.Outlined" Min="0" MaxLength="7" />
+                    <MudNumericField @bind-Value="model.Thickness" Label="Thickness" Variant="Variant.Outlined" Min="0" MaxLength="7" />
+                </MudStack>
+                <MudItem>
+                    <MudTextField FullWidth="false" Immediate="true" @bind-Value="model.Notes"Label="Notes" Variant="Variant.Outlined" For="@(() => model.Notes)" Counter="2000" Lines="3" ></MudTextField>
+                </MudItem>
+            </MudCardContent>
+            <MudText>Status: @addLumberMessage</MudText>
+            <MudStack Row="true" Style="">
+                <MudButton ButtonType="ButtonType.Submit" Class=" pa-3">Add Lumber</MudButton>
+                <MudButton Class="pa-3" @onclick="Clear">Clear</MudButton>
+            </MudStack>
+        </MudStack>
+    </MudCard>
+</EditForm>
+
+@code {
+    AddLumberForm model = new AddLumberForm();
+    List<WoodSpecies> SpeciesList = new List<WoodSpecies>();
+    private string addLumberMessage { get; set; }
+    private int woodSpeciesCollectionSize { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+
+        model.Quantity = 1;
+        SpeciesList = PopulateSpeciesList();
+        woodSpeciesCollectionSize = SpeciesList.Count();
+        return base.OnInitializedAsync();
+    }
+    private List<WoodSpecies> PopulateSpeciesList()
+    {
+        WoodSpeciesCollection AllWoodSpecies = new WoodSpeciesCollection();
+        AllWoodSpecies.PopulateAll();
+        return AllWoodSpecies.WoodSpeciesList;
+    }
+    public class AddLumberForm
+    {
+        [Required(ErrorMessage = "The Name field must have a value.")]
+        [StringLength(50, ErrorMessage = "Name length can't be more than 50.")]
+        public string Name { get; set; }
+        [Required(ErrorMessage = "The Notes field must have a value.")]
+        [StringLength(2000, ErrorMessage = "Notes length can't be more than 2000.")]
+        public string Notes { get; set; }
+        [Required(ErrorMessage = "The Quantity field must have a value.")]
+        public int Quantity { get; set; }
+        [Required(ErrorMessage = "The Length field must have a value.")]
+        public double Length { get; set; }
+        [Required(ErrorMessage = "The Width field must have a value.")]
+        public double Width { get; set; }
+        [Required(ErrorMessage = "The Thinkness field must have a value.")]
+        public double Thickness { get; set; }
+        [Required(ErrorMessage = "The Wood Species field must have a value.")]
+        public string WoodSpecies { get; set; }
+    }
+    private async Task<IEnumerable<string>> SearchLumber(string value)
+    {
+
+
+        await OnInitializedAsync();
+        return SpeciesList.Select(x => x.Name);
+    }
+    private async void OnValidSubmit(EditContext context)
+    {
+        ResultMessage retMsg = await svc.AddLumberAsync(model.Name, model.Notes);
+        addLumberMessage = retMsg.Message;
+        StateHasChanged();
+        Clear();
+    }
+    private void Clear()
+    {
+        model.Name = "";
+        model.Notes = "";
+        model.Quantity = 1;
+        model.Width = 0;
+        model.Length = 0;
+        model.Thickness = 0;
+        model.WoodSpecies = "";
+    }
+}
