@@ -115,7 +115,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNotesPart["name"];
             command.Parameters.Add(parameter);
         }
@@ -128,7 +128,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@DIM", DT.SqlDbType.NVarChar, 1000);
+            parameter = new QC.SqlParameter("@DIM", DT.SqlDbType.NVarChar);
             if (dictNotesPart["dimension"].Equals("length"))
                 parameter.Value = "Length";
             else if (dictNotesPart["dimension"].Equals("width"))
@@ -137,11 +137,11 @@ namespace FineWoodworkingBasic.Model
                 parameter.Value = "Thickness";
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@LOW", DT.SqlDbType.Float);  // Fix Type and Length 
             parameter.Value = dictNotesPart["lowerLimitPart"];
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@UP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@UP", DT.SqlDbType.Float);  // Fix Type and Length 
             parameter.Value = dictNotesPart["upperLimitPart"];
             command.Parameters.Add(parameter);
         }
@@ -174,31 +174,31 @@ namespace FineWoodworkingBasic.Model
 
             if (dictNotesPart.ContainsKey("lengthLowerPart") && dictNotesPart.ContainsKey("lengthUpperPart"))
             {
-                parameter = new QC.SqlParameter("@LENLOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@LENLOW", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["lengthLowerPart"];
                 command.Parameters.Add(parameter);
 
-                parameter = new QC.SqlParameter("@LENUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@LENUP", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["lengthUpperPart"];
                 command.Parameters.Add(parameter);
             }
             if (dictNotesPart.ContainsKey("widthLowerPart") && dictNotesPart.ContainsKey("widthUpperPart"))
             {
-                parameter = new QC.SqlParameter("@WIDLOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@WIDLOW", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["widthLowerPart"];
                 command.Parameters.Add(parameter);
 
-                parameter = new QC.SqlParameter("@WIDUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@WIDUP", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["widthUpperPart"];
                 command.Parameters.Add(parameter);
             }
             if (dictNotesPart.ContainsKey("thicknessLowerPart") && dictNotesPart.ContainsKey("thicknessUpperPart"))
             {
-                parameter = new QC.SqlParameter("@THILOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@THILOW", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["thicknessLowerPart"];
                 command.Parameters.Add(parameter);
 
-                parameter = new QC.SqlParameter("@THIUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@THIUP", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["thicknessUpperPart"];
                 command.Parameters.Add(parameter);
             }

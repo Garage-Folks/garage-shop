@@ -127,7 +127,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 50); // Fix Type and Length 
             parameter.Value = dictNotesPart["name"];
             command.Parameters.Add(parameter);
         }
@@ -142,7 +142,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 50); // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesName"];
             command.Parameters.Add(parameter);
         }
@@ -155,7 +155,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.UniqueIdentifier, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesID"];
             command.Parameters.Add(parameter);
         }
@@ -168,18 +168,18 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@DIM", DT.SqlDbType.NVarChar, 1000);
+            parameter = new QC.SqlParameter("@DIM", DT.SqlDbType.NVarChar);
             if (dictNotesPart["dimension"].Equals("length"))
                 parameter.Value = "Length";
             else
                 parameter.Value = "Diameter";
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@LOW", DT.SqlDbType.Float);  // Fix Type and Length 
             parameter.Value = dictNotesPart["lowerLimitPart"];
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@UP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@UP", DT.SqlDbType.Float);  // Fix Type and Length 
             parameter.Value = dictNotesPart["upperLimitPart"];
             command.Parameters.Add(parameter);
         }
@@ -206,21 +206,21 @@ namespace FineWoodworkingBasic.Model
 
             if (dictNotesPart.ContainsKey("lengthLowerPart") && dictNotesPart.ContainsKey("lengthUpperPart"))
             {
-                parameter = new QC.SqlParameter("@LENLOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@LENLOW", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["lengthLowerPart"];
                 command.Parameters.Add(parameter);
 
-                parameter = new QC.SqlParameter("@LENUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@LENUP", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["lengthUpperPart"];
                 command.Parameters.Add(parameter);
             }
             if (dictNotesPart.ContainsKey("diameterLowerPart") && dictNotesPart.ContainsKey("diameterUpperPart"))
             {
-                parameter = new QC.SqlParameter("@DIALOW", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@DIALOW", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["diameterLowerPart"];
                 command.Parameters.Add(parameter);
 
-                parameter = new QC.SqlParameter("@DIAUP", DT.SqlDbType.Float, 1000);  // Fix Type and Length 
+                parameter = new QC.SqlParameter("@DIAUP", DT.SqlDbType.Float);  // Fix Type and Length 
                 parameter.Value = dictNotesPart["diameterUpperPart"];
                 command.Parameters.Add(parameter);
             }

@@ -174,7 +174,7 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = Quantity;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
@@ -182,7 +182,7 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = GlueType;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = BrandID;
             command.Parameters.Add(parameter);
 
