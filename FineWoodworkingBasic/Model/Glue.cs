@@ -2,43 +2,45 @@
 using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
+using System.Data.SqlTypes;
+using System.Transactions;
+using System.Reflection.PortableExecutable;
 
 namespace FineWoodworkingBasic.Model
 {
     public class Glue : InventoryItem
     {
 
-        protected string GlueType { get; set; }
+        public string GlueType { get; protected set; }
         
-
         // Foreign Key
-        protected int BrandID { get; set; }
+        public SqlGuid BrandID { get; protected set; } = new SqlGuid();
 
-        public Glue(int id, string name, string notes, string fileImg1, string fileImg2, string fileImg3,
-            int quantity, string glueType) :
-            base(id, name, name, notes, fileImg1, fileImg2, quantity)
+        public Glue(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+            int quantity, string glueType, SqlGuid brandId) :
+            base(id, name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
             GlueType = glueType;
-            
+            BrandID = brandId;
         }
 
         public Glue(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
-            int quantity, string glueType) :
-            base(name, name, notes, fileImg1, fileImg2, quantity)
+            int quantity, string glueType, SqlGuid brandId) :
+            base(name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
             GlueType = glueType;
-
+            BrandID = brandId;
         }
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> dictIdToUse, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Glue WHERE (ID = @NP);";
+            string query = @"SELECT * FROM Glue WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.Int);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -48,24 +50,22 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                ID = reader.GetInt32(reader.GetOrdinal("ID"));
+                ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
                 Name = reader.GetString(reader.GetOrdinal("Name"));
                 Notes = reader.GetString(reader.GetOrdinal("Notes"));
                 FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
-                BrandID = reader.GetInt32(reader.GetOrdinal("BrandID"));
+                LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
                 GlueType = reader.GetString(reader.GetOrdinal("GlueType"));
-
+                BrandID = reader.GetSqlGuid(reader.GetOrdinal("BrandID"));
             }
         }
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID == 0) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -76,9 +76,9 @@ namespace FineWoodworkingBasic.Model
 
             QC.SqlParameter parameter;
 
-            string insertQuery = "INSERT INTO Glue (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, GlueType) " +
+            string insertQuery = "INSERT INTO Glue (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, GlueType, BrandID) " +
                 " OUTPUT INSERTED.ID " +
-                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @GlueType);";
+                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @GlueType, @BrandID);";
 
             command.CommandText = insertQuery;
 
@@ -106,7 +106,7 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = Quantity;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.Int, 1000);
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000);
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
@@ -114,7 +114,9 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = GlueType;
             command.Parameters.Add(parameter);
 
-
+            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter.Value = BrandID;
+            command.Parameters.Add(parameter);
         }
 
         protected override void SetupCommandForDelete(QC.SqlCommand command)
@@ -126,12 +128,12 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = deleteQuery;
 
-            parameter = new QC.SqlParameter("@ID", DT.SqlDbType.Int); 
+            parameter = new QC.SqlParameter("@ID", DT.SqlDbType.UniqueIdentifier); 
             parameter.Value = this.ID;
             command.Parameters.Add(parameter);
         }
 
-        protected override void SetAutogeneratedIDFromInsert(int genID)
+        protected override void SetAutogeneratedIDFromInsert(SqlGuid genID)
         {
             this.ID = genID;
         }
@@ -141,7 +143,9 @@ namespace FineWoodworkingBasic.Model
             QC.SqlParameter parameter;
 
             string updateQuery = "UPDATE Glue" +
-               " SET Name = @Name, Notes = @Notes, Qty = @Qty, GlueType = @GlueType " +
+               " SET Name = @Name, Notes = @Notes, LinkImg1 = @LinkImg1," +
+               " LinkImg2 = @LinkImg2, LinkImg3 = @LinkImg3, Qty = @Qty, LocationID = @LocationID," +
+               " GlueType = @GlueType, BrandID = @BrandID " +
                " WHERE (ID = @Id);";
 
             command.CommandText = updateQuery;
@@ -154,50 +158,61 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = Notes;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.Int);
-            parameter.Value = ID;
+            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, int.MaxValue);
+            parameter.Value = FileImage1;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int,5);
+            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, int.MaxValue);
+            parameter.Value = FileImage2;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, int.MaxValue);
+            parameter.Value = FileImage3;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 5);
             parameter.Value = Quantity;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@GlueType", DT.SqlDbType.NVarChar,50); 
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter.Value = LocationID;
+            command.Parameters.Add(parameter);
+
+            parameter = new QC.SqlParameter("@GlueType", DT.SqlDbType.NVarChar, 50);
             parameter.Value = GlueType;
             command.Parameters.Add(parameter);
 
+            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter.Value = BrandID;
+            command.Parameters.Add(parameter);
 
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
+            parameter.Value = ID;
+            command.Parameters.Add(parameter);
         }
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Glue with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Glue with Name: " + this.Name +
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Glue with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Glue with Name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Glue with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Glue with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
@@ -211,7 +226,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Glue with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Glue with Name: " + this.Name
                     + " deleted successfully from database!");
             return mesg;
         }
@@ -222,11 +237,34 @@ namespace FineWoodworkingBasic.Model
                 " from database!");
             return mesg;
         }
-        
-        public override string ToString()
+
+        public override bool Equals(object? obj)
         {
-            return "Name: " + Name + "Quantity: " + Quantity + "GlueType: " + GlueType;
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            Glue other = (Glue)obj;
+
+            if (!base.Equals((InventoryItem)other)) return false;
+
+            if (!this.GlueType.Equals(other.GlueType)) return false;
+
+            if (!this.BrandID.Equals(other.BrandID)) return false;
+
+            return true;
         }
 
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        } 
+
+        public override string ToString()
+        {
+            return "\nGlue\n----------\n" +
+                $"   Name: {Name}\n" +
+                $"   Quantity: {Quantity}\n" +
+                $"   GlueType: {GlueType}";
+        }
     }
 }

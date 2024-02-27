@@ -4,6 +4,7 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -26,22 +27,21 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                int ID = reader.GetInt32(reader.GetOrdinal("ID"));
+                SqlGuid ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
                 string Name = reader.GetString(reader.GetOrdinal("Name"));
                 string Notes = reader.GetString(reader.GetOrdinal("Notes"));
                 string FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 string FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 string FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 int Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                int LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
+                SqlGuid LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
                 string GlueType = reader.GetString(reader.GetOrdinal("GlueType"));
-                Glue glue = new Glue(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, GlueType);
+                SqlGuid BrandID = reader.GetSqlGuid(reader.GetOrdinal("BrandID"));
+                Glue glue = new Glue(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, GlueType, BrandID);
                 glue.SetLocationID(LocationID);
                 GlueList.Add(glue);
-
             }
         }
-
 
         public void PopulateAll()
         {
@@ -65,14 +65,10 @@ namespace FineWoodworkingBasic.Model
 
         protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
         {
-            QC.SqlParameter parameter;
-
             string query = @"SELECT * FROM Glue";
 
             command.CommandText = query;
-
         }
-
 
         protected virtual void QueryConstructorViaName(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
         {
@@ -110,6 +106,31 @@ namespace FineWoodworkingBasic.Model
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
             throw new NotSupportedException();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            GlueCollection other = (GlueCollection)obj;
+
+            if (GlueList.Count != other.GlueList.Count) { return false; }
+
+            for (int cnt = 0; cnt < GlueList.Count; cnt++)
+            {
+                Glue nextGlue = GlueList[cnt];
+                Glue nextOtherGlue = other.GlueList[cnt];
+
+                if (!nextGlue.Equals(nextOtherGlue)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

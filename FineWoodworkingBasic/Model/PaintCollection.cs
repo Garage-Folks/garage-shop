@@ -52,11 +52,11 @@ namespace FineWoodworkingBasic.Model
             PopulateHelper(d);
         }
 
-        public void PopulateViaName(string name)
+        public void PopulateViaName(string namePart)
         {
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaName);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["name"] = name;
+            d["name"] = namePart;
             PopulateHelper(d);
         }
 
@@ -110,7 +110,7 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Varnish WHERE (Name LIKE CONCAT('%', @NP, '%'));";
+            string query = @"SELECT * FROM Paint WHERE (Name LIKE CONCAT('%', @NP, '%'));";
 
             command.CommandText = query;
 
@@ -202,6 +202,31 @@ namespace FineWoodworkingBasic.Model
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
             throw new NotSupportedException();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            PaintCollection other = (PaintCollection)obj;
+
+            if (PaintList.Count != other.PaintList.Count) { return false; }
+
+            for (int cnt = 0; cnt < PaintList.Count; cnt++)
+            {
+                Paint nextPaint = PaintList[cnt];
+                Paint nextOtherPaint = other.PaintList[cnt];
+
+                if (!nextPaint.Equals(nextOtherPaint)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

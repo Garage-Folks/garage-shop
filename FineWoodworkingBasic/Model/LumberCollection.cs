@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 using System.Data.SqlTypes;
+using System.Diagnostics;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -272,6 +273,31 @@ namespace FineWoodworkingBasic.Model
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
             throw new NotSupportedException();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            LumberCollection other = (LumberCollection)obj;
+
+            if (LumberList.Count != other.LumberList.Count) { return false; }
+
+            for (int cnt = 0; cnt < LumberList.Count; cnt++)
+            {
+                Lumber nextLumber = LumberList[cnt];
+                Lumber nextOtherLumber = other.LumberList[cnt];
+
+                if (!nextLumber.Equals(nextOtherLumber)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

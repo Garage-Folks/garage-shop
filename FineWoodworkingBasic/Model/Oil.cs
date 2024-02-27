@@ -8,10 +8,10 @@ namespace FineWoodworkingBasic.Model
 {
     public class Oil : InventoryItem
     {
-        protected string Nature { get; set; }
+        public string Nature { get; protected set; } = "";
 
         // Foreign Key
-        protected SqlGuid BrandID { get; set; }
+        public SqlGuid BrandID { get; protected set; } = new SqlGuid();
 
 
 
@@ -33,86 +33,25 @@ namespace FineWoodworkingBasic.Model
 
         private void SetNature(string nature)
         {
-            string uppercaseNature = nature.ToUpper();
+            nature = nature.ToUpper();
 
-            if (uppercaseNature == "DRYING" || uppercaseNature == "NON-DRYING")
-            {
-                Nature = uppercaseNature;
-            } else
-            {
+            if (nature == "DRYING" || nature == "NON-DRYING")
+                Nature = nature;
+            else
                 throw new ArgumentException("Invalid value for Nature. Must be 'Drying' or 'Non-Drying'.");
-            }
-        }
-
-        public override bool IsPopulated()
-        {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
-            return true;
         }
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, object> dictIdToUse, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
-            String query = @"SELECT * FROM Oil WHERE (ID = @NP);";
+
+            string query = @"SELECT * FROM Oil WHERE (ID = @Id);";
 
             command.CommandText = query;
-            parameter = new SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
-        }
-
-        protected override ResultMessage GetErrorMessageForDelete(Exception excep)
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting Oil with Name: " + this.Name
-                    + " from the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetErrorMessageForPopulate(Exception excep)
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Oil with ID: " + this.ID
-                    + " from the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetErrorMessageForSave(Exception excep)
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving Oil with Name: " + this.Name
-                    + " into the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetResultMessageForDelete()
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
-                    + " deleted successfully from the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetResultMessageForPopulate()
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with ID: " + this.ID
-                    + " retrieved successfully from the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetResultMessageForSave()
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
-                    + " saved successfully into the database!");
-            return mesg;
-        }
-
-        protected override bool IsNewObject()
-        {
-            if (ID == null)
-            {
-                return true;
-            } else
-            {
-                return false;
-            }
         }
 
         protected override void ProcessPopulateQueryResult(QC.SqlDataReader reader)
@@ -132,18 +71,10 @@ namespace FineWoodworkingBasic.Model
             }
         }
 
-        protected override void SetupCommandForDelete(QC.SqlCommand command)
+        public override bool IsPopulated()
         {
-            QC.SqlParameter parameter;
-
-            string deleteQuery = "DELETE FROM Oil " +
-                " (WHERE ID = @ID)";
-
-            command.CommandText = deleteQuery;
-
-            parameter = new QC.SqlParameter("@ID", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
-            parameter.Value = this.ID;
-            command.Parameters.Add(parameter);
+            if (this.ID.IsNull) return false;
+            return true;
         }
 
         protected override void SetupCommandForInsert(QC.SqlCommand command)
@@ -153,7 +84,7 @@ namespace FineWoodworkingBasic.Model
 
             QC.SqlParameter parameter;
 
-            string insertQuery = "INSERT INTO Oil (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, Nature, BrandedID) " +
+            string insertQuery = "INSERT INTO Oil (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, Nature, BrandID) " +
                 " OUTPUT INSERTED.ID " +
                 " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @Nature, @BrandID);";
 
@@ -189,6 +120,20 @@ namespace FineWoodworkingBasic.Model
 
             parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
             parameter.Value = BrandID;
+            command.Parameters.Add(parameter);
+        }
+
+        protected override void SetupCommandForDelete(QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+
+            string deleteQuery = "DELETE FROM Oil " +
+                " (WHERE ID = @ID)";
+
+            command.CommandText = deleteQuery;
+
+            parameter = new QC.SqlParameter("@ID", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
+            parameter.Value = this.ID;
             command.Parameters.Add(parameter);
         }
 
@@ -250,11 +195,80 @@ namespace FineWoodworkingBasic.Model
             command.Parameters.Add(parameter);
         }
 
+        protected override bool IsNewObject()
+        {
+            return !this.IsPopulated();
+        }
+
+        protected override ResultMessage GetErrorMessageForDelete(Exception excep)
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting Oil with Name: " + this.Name
+                    + " from the database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetErrorMessageForPopulate(Exception excep)
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Oil with Name: " + this.Name
+                    + " from the database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetErrorMessageForSave(Exception excep)
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving Oil with Name: " + this.Name
+                    + " into the database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetResultMessageForDelete()
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
+                    + " deleted successfully from the database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetResultMessageForPopulate()
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
+                    + " retrieved successfully from the database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetResultMessageForSave()
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
+                    + " saved successfully into the database!");
+            return mesg;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            Oil other = (Oil)obj;
+
+            if (!base.Equals((InventoryItem)other)) return false;
+
+            if (!this.Nature.Equals(other.Nature)) return false;
+
+            if (!this.BrandID.Equals(other.BrandID)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
+
         public override string ToString()
         {
             return "\nOil\n----------\n" +
-                   $"   Name: {Name}\n   Quantity: {Quantity}" +
-                   $"\n----------\n" +
+                   $"   Name: {Name}\n" +
+                   $"   Quantity: {Quantity}\n" +
                    $"   Nature: {Nature}";
         }
 

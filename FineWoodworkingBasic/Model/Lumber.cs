@@ -9,12 +9,12 @@ namespace FineWoodworkingBasic.Model
     public class Lumber : InventoryItem
     {
        
-        protected double Length { get; set; }
-        protected double Width { get; set; }
-        protected double Thickness { get; set; }
+        public double Length { get; protected set; }
+        public double Width { get; protected set; }
+        public double Thickness { get; protected set; }
 
         // Foreign Key
-        protected SqlGuid WoodSpeciesID { get; set; }   
+        public SqlGuid WoodSpeciesID { get; protected set; } = new SqlGuid();
         
         public Lumber(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, 
             string fileImg3, int quantity, double length, double width, double thickness, SqlGuid woodSpeciesId) : 
@@ -40,11 +40,11 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Lumber WHERE (ID = @NP);";
+            string query = @"SELECT * FROM Lumber WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -71,8 +71,7 @@ namespace FineWoodworkingBasic.Model
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -216,33 +215,26 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with Name: " + this.Name +
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with Name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Lumber with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Lumber with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
@@ -256,7 +248,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Lumber with Name: " + this.Name
                     + " deleted successfully from database!");
             return mesg;
         }
@@ -268,12 +260,39 @@ namespace FineWoodworkingBasic.Model
             return mesg;
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            Lumber other = (Lumber)obj;
+
+            if (!base.Equals((InventoryItem)other)) return false;
+
+            if (this.Length != other.Length) return false;
+
+            if (this.Width != other.Width) return false;
+
+            if (this.Thickness != other.Thickness) return false;
+
+            if (!this.WoodSpeciesID.Equals(other.WoodSpeciesID)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return "\nLumber\n----------\n" +
-                   $"   Name: {Name}\n   Quantity: {Quantity}" +
-                   $"\n----------\n" +
-                   $"   Length: {Length}\n   Width: {Width}\n   Thickness: {Thickness}";
+                   $"   Name: {Name}\n" +
+                   $"   Quantity: {Quantity}\n" +
+                   $"   Length: {Length}\n" +
+                   $"   Width: {Width}\n" +
+                   $"   Thickness: {Thickness}";
         }
 
     }

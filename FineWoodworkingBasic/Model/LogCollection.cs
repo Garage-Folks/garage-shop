@@ -250,6 +250,31 @@ namespace FineWoodworkingBasic.Model
             throw new NotSupportedException();
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            LogCollection other = (LogCollection)obj;
+
+            if (LogList.Count != other.LogList.Count) { return false; }
+
+            for (int cnt = 0; cnt < LogList.Count; cnt++)
+            {
+                Log nextLog = LogList[cnt];
+                Log nextOtherLog = other.LogList[cnt];
+
+                if (!nextLog.Equals(nextOtherLog)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             string retVal = "";

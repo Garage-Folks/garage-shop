@@ -24,6 +24,12 @@ namespace FineWoodworkingBasic.Model
             Message = message;
         }
 
+        public Boolean Equals(ResultMessage other)
+        {
+            Boolean retVal = false;
+            if ((MessageType == other.MessageType) && (Message == other.Message)) { retVal = true; }
+            return retVal;
+        }
 
     }
 }

@@ -204,6 +204,32 @@ namespace FineWoodworkingBasic.Model
             throw new NotSupportedException();
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            MiscFinishProductCollection other = (MiscFinishProductCollection)obj;
+
+            if (MFPList.Count != other.MFPList.Count) { return false; }
+
+            for (int cnt = 0; cnt < MFPList.Count; cnt++)
+            {
+                MiscFinishProduct nextMFP = MFPList[cnt];
+                MiscFinishProduct nextOtherMFP = other.MFPList[cnt];
+
+                if (!nextMFP.Equals(nextOtherMFP)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
+
         public override string ToString()
         {
             string retVal = "";

@@ -12,14 +12,12 @@ namespace FineWoodworkingBasic.Model
     public class Brand : Persistable
     {
 
-        protected SqlGuid? ID { get; set; }
-        protected string Name { get; set; }
-        protected string? Notes { get; set; }
+        public SqlGuid ID { get; protected set; } = new SqlGuid();
+        public string Name { get; protected set; } = "";
+        public string Notes { get; protected set; } = "";
 
         public Brand()
         {
-            ID = new SqlGuid();
-            Name = "";
         }
 
         public Brand(SqlGuid Id, string nm, string notes)
@@ -43,9 +41,8 @@ namespace FineWoodworkingBasic.Model
 
         public void Populate(SqlGuid idToUse)
         {
-            string IDStr = idToUse + "";
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["id"] = IDStr;
+            d["id"] = idToUse;
             PopulateHelper(d);
         }
 
@@ -53,11 +50,11 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Brand WHERE (ID = @NP);";
+            string query = @"SELECT * FROM Brand WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -75,8 +72,7 @@ namespace FineWoodworkingBasic.Model
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -133,33 +129,26 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Brand with ID: " + this.ID + 
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Brand with Name: " + this.Name + 
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Brand with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Brand with Name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Brand with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Brand with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
@@ -171,10 +160,32 @@ namespace FineWoodworkingBasic.Model
             return mesg;
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            Brand other = (Brand)obj;
+
+            if (!this.ID.Equals(other.ID)) return false;
+
+            if (!this.Name.Equals(other.Name)) return false;
+
+            if (!this.Notes.Equals(other.Notes)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return "\nBrand\n----------\n" +
-            $"   Name: {Name}\n   Notes: {Notes}";
+            $"   Name: {Name}\n" +
+            $"   Notes: {Notes}";
         }
 
     }

@@ -10,10 +10,10 @@ namespace FineWoodworkingBasic.Model
     public class MiscWood : InventoryItem
     {
        
-        protected string SpeciesDesc { get; set; }
+        public string SpeciesDesc { get; protected set; }
 
         // Foreign Key
-        protected SqlGuid WoodSpeciesID { get; set; }   
+        public SqlGuid WoodSpeciesID { get; protected set; } = new SqlGuid();
         
         public MiscWood(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, 
             string fileImg3, int quantity, string speciesDesc, SqlGuid woodSpeciesId) : 
@@ -35,11 +35,11 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM MiscWood WHERE (ID = @NP);";
+            string query = @"SELECT * FROM MiscWood WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -64,8 +64,7 @@ namespace FineWoodworkingBasic.Model
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -193,33 +192,26 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with Name: " + this.Name +
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with Name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving MiscWood with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving MiscWood with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
@@ -233,7 +225,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with Name: " + this.Name
                     + " deleted successfully from database!");
             return mesg;
         }
@@ -245,11 +237,32 @@ namespace FineWoodworkingBasic.Model
             return mesg;
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            MiscWood other = (MiscWood)obj;
+
+            if (!base.Equals((InventoryItem)other)) return false;
+
+            if (!this.SpeciesDesc.Equals(other.SpeciesDesc)) return false;
+
+            if (!this.WoodSpeciesID.Equals(other.WoodSpeciesID)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return "\nMisc Wood\n----------\n" +
-                   $"   Name: {Name}\n   Quantity: {Quantity}" +
-                   $"\n----------\n" +
+                   $"   Name: {Name}\n" +
+                   $"   Quantity: {Quantity}\n" +
                    $"   Species Description: {SpeciesDesc}";
         }
 

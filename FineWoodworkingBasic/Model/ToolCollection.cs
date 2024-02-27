@@ -4,6 +4,7 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
@@ -26,22 +27,21 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                int ID = reader.GetInt32(reader.GetOrdinal("ID"));
+                SqlGuid ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
                 string Name = reader.GetString(reader.GetOrdinal("Name"));
                 string Notes = reader.GetString(reader.GetOrdinal("Notes"));
                 string FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 string FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 string FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 int Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                int LocationID = reader.GetInt32(reader.GetOrdinal("LocationID"));
+                SqlGuid LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
                 string ToolType = reader.GetString(reader.GetOrdinal("ToolType"));
-                Tool tool = new Tool(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, ToolType);
+                SqlGuid BrandID = reader.GetSqlGuid(reader.GetOrdinal("BrandID"));
+                Tool tool = new Tool(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, ToolType, BrandID);
                 tool.SetLocationID(LocationID);
                 ToolList.Add(tool);
-
             }
         }
-
 
         public void PopulateAll()
         {
@@ -65,12 +65,9 @@ namespace FineWoodworkingBasic.Model
 
         protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
         {
-            QC.SqlParameter parameter;
-
             string query = @"SELECT * FROM Tool";
 
             command.CommandText = query;
-
         }
 
 
@@ -110,6 +107,31 @@ namespace FineWoodworkingBasic.Model
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
             throw new NotSupportedException();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            ToolCollection other = (ToolCollection)obj;
+
+            if (ToolList.Count != other.ToolList.Count) { return false; }
+
+            for (int cnt = 0; cnt < ToolList.Count; cnt++)
+            {
+                Tool nextTool = ToolList[cnt];
+                Tool nextOtherTool = other.ToolList[cnt];
+
+                if (!nextTool.Equals(nextOtherTool)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

@@ -41,7 +41,6 @@ namespace FineWoodworkingBasic.Model
                 Varnish varnish = new Varnish(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, MaterialType, BrandID);
                 varnish.SetLocationID(LocationID);
                 VarnishList.Add(varnish);
-
             }
         }
 
@@ -52,11 +51,11 @@ namespace FineWoodworkingBasic.Model
             PopulateHelper(d);
         }
 
-        public void PopulateViaName(string name)
+        public void PopulateViaName(string namePart)
         {
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaName);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["name"] = name;
+            d["name"] = namePart;
             PopulateHelper(d);
         }
 
@@ -202,6 +201,31 @@ namespace FineWoodworkingBasic.Model
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
             throw new NotSupportedException();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            VarnishCollection other = (VarnishCollection)obj;
+
+            if (VarnishList.Count != other.VarnishList.Count) { return false; }
+
+            for (int cnt = 0; cnt < VarnishList.Count; cnt++)
+            {
+                Varnish nextVarnish = VarnishList[cnt];
+                Varnish nextOtherVarnish = other.VarnishList[cnt];
+
+                if (!nextVarnish.Equals(nextOtherVarnish)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

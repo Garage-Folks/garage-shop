@@ -31,8 +31,7 @@ namespace FineWoodworkingBasic.Model
                 SqlGuid ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
                 string Name = reader.GetString(reader.GetOrdinal("Name"));
                 string Notes = reader.GetString(reader.GetOrdinal("Notes"));
-                WoodSpecies woodSpecies = new WoodSpecies(ID, Name, Notes);
-                WoodSpeciesList.Add(woodSpecies);
+                WoodSpeciesList.Add(new WoodSpecies(ID, Name, Notes));
             }
         }
 
@@ -77,6 +76,31 @@ namespace FineWoodworkingBasic.Model
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
             throw new NotSupportedException();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            WoodSpeciesCollection other = (WoodSpeciesCollection)obj;
+
+            if (WoodSpeciesList.Count != other.WoodSpeciesList.Count) { return false; }
+
+            for (int cnt = 0; cnt < WoodSpeciesList.Count; cnt++)
+            {
+                WoodSpecies nextWoodSpecies = WoodSpeciesList[cnt];
+                WoodSpecies nextOtherWoodSpecies = other.WoodSpeciesList[cnt];
+
+                if (!nextWoodSpecies.Equals(nextOtherWoodSpecies)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

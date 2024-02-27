@@ -202,6 +202,31 @@ namespace FineWoodworkingBasic.Model
             throw new NotSupportedException();
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            OilCollection other = (OilCollection)obj;
+
+            if (OilList.Count != other.OilList.Count) { return false; }
+
+            for (int cnt = 0; cnt < OilList.Count; cnt++)
+            {
+                Oil nextOil = OilList[cnt];
+                Oil nextOtherOil = other.OilList[cnt];
+
+                if (!nextOil.Equals(nextOtherOil)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             string retVal = "";

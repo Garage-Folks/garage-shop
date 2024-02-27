@@ -3,16 +3,17 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Data.SqlTypes;
+using System;
 
 namespace FineWoodworkingBasic.Model
 {
     public class Varnish : InventoryItem
     {
 
-        protected string MaterialType { get; set; }
+        public string MaterialType { get; protected set; }
 
         // Foreign Key
-        protected SqlGuid BrandID { get; set; }
+        public SqlGuid BrandID { get; protected set; } = new SqlGuid();
 
         public Varnish(SqlGuid id, string name, string notes, string fileImg1, string fileImg2,
             string fileImg3, int quantity, string materialtype, SqlGuid BrandId) :
@@ -34,11 +35,11 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Varnish WHERE (ID = @NP);";
+            string query = @"SELECT * FROM Varnish WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -63,8 +64,7 @@ namespace FineWoodworkingBasic.Model
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -192,33 +192,26 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Varnish with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Varnish with Name: " + this.Name +
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Varnish with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Varnish with Name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Varnish with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Varnish with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
@@ -232,7 +225,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Varnish with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Varnish with Name: " + this.Name
                     + " deleted successfully from database!");
             return mesg;
         }
@@ -244,9 +237,33 @@ namespace FineWoodworkingBasic.Model
             return mesg;
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            Varnish other = (Varnish)obj;
+
+            if (!base.Equals((InventoryItem)other)) return false;
+
+            if (!this.MaterialType.Equals(other.MaterialType)) return false;
+
+            if (!this.BrandID.Equals(other.BrandID)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
-            return "ID: " + ID + "; Name: " + Name + "; Notes: " + Notes + " ";
+            return "\nVarnish\n----------\n" +
+                $"   Name: {Name}\n" +
+                $"   Quantity: {Quantity}\n" +
+                $"   MaterialType: {MaterialType}\n";
         }
 
     }
