@@ -3,10 +3,13 @@ using IniParser;
 using System.Xml.Linq;
 using System.Text;
 using System.Security.Cryptography;
+using System.ComponentModel;
+using System.Reflection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FineWoodworkingBasic.Util
 {
-    public class Utilities
+    public static class Utilities
     {
 
         private static string ConnectionString = "";
@@ -92,6 +95,28 @@ namespace FineWoodworkingBasic.Util
                 }
                 return builder.ToString();
             }
+        }
+
+        public static string GetDescription(this Enum value)
+        {
+            Type type = value.GetType();
+            string name = Enum.GetName(type, value);
+            if (!name.IsNullOrEmpty())
+            {
+                FieldInfo field = type.GetField(name);
+                if (field != null)
+                {
+                    DescriptionAttribute attr =
+                           Attribute.GetCustomAttribute(field,
+                             typeof(DescriptionAttribute)) as DescriptionAttribute;
+                    if (attr != null)
+                    {
+                        return attr.Description;
+                    }
+                }
+                return value.ToString();
+            }
+            return null;
         }
     }
 }

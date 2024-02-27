@@ -1,0 +1,42 @@
+﻿@page "/dataOperations"
+@using Enums
+@using Util
+
+
+<MudDataGrid Items="Tables" Filterable="true" Groupable="true"> 
+    <Columns>
+    <PropertyColumn Property="x => Utilities.GetDescription(x)" Title="Table Name"/>
+    <TemplateColumn Title="Available Operations">
+        <CellTemplate>
+            <MudStack Row>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlaylistAdd" OnClick="OpenAddDialog">Add</MudButton>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlaylistPlay" OnClick="OpenUpdateDialog">Update</MudButton>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PlaylistRemove" OnClick="OpenDeleteDialog">Delete</MudButton>
+            </MudStack>
+        </CellTemplate>
+    </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+
+@*Adjust the buttons of the grid based on the incomming model class name.*@
+
+
+@code{
+    private List<Enums.TableName>? Tables;
+
+    protected override void OnInitialized()
+    {
+        Tables = Enum.GetValues<Enums.TableName>().ToList<Enums.TableName>();
+    }
+
+    private void OpenAddDialog()
+    {
+    }
+    private void OpenUpdateDialog()
+    {
+    }
+    private void OpenDeleteDialog()
+    {
+    }
+}
