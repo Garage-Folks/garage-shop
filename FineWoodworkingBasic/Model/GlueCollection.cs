@@ -4,22 +4,21 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
 using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
-    public class WoodSpeciesCollection : PersistableCollection
+    public class GlueCollection : PersistableCollection
     {
-        protected List<WoodSpecies> WoodSpeciesList;
+        protected List<Glue> GlueList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 
         protected PopulateQueryMethodType QueryMethod;
 
-        public WoodSpeciesCollection()
+        public GlueCollection()
         {
-            WoodSpeciesList = new List<WoodSpecies>();
+            GlueList = new List<Glue>();
             QueryMethod = QueryConstructorAll;
         }
 
@@ -31,7 +30,16 @@ namespace FineWoodworkingBasic.Model
                 SqlGuid ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
                 string Name = reader.GetString(reader.GetOrdinal("Name"));
                 string Notes = reader.GetString(reader.GetOrdinal("Notes"));
-                WoodSpeciesList.Add(new WoodSpecies(ID, Name, Notes));
+                string FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
+                string FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
+                string FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
+                int Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
+                SqlGuid LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
+                string GlueType = reader.GetString(reader.GetOrdinal("GlueType"));
+                SqlGuid BrandID = reader.GetSqlGuid(reader.GetOrdinal("BrandID"));
+                Glue glue = new Glue(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, GlueType, BrandID);
+                glue.SetLocationID(LocationID);
+                GlueList.Add(glue);
             }
         }
 
@@ -42,6 +50,14 @@ namespace FineWoodworkingBasic.Model
             PopulateHelper(d);
         }
 
+        public void PopulateViaName(string namePart)
+        {
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaName);
+            Dictionary<string, Object> d = new Dictionary<string, Object>();
+            d["name"] = namePart;
+            PopulateHelper(d);
+        }
+
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> val, QC.SqlCommand command)
         {
             QueryMethod(val, command);
@@ -49,14 +65,28 @@ namespace FineWoodworkingBasic.Model
 
         protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
         {
-            string query = @"SELECT * FROM SpeciesWood";
+            string query = @"SELECT * FROM Glue";
 
             command.CommandText = query;
         }
 
+        protected virtual void QueryConstructorViaName(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        {
+            QC.SqlParameter parameter;
+
+            string query = @"SELECT * FROM Glue WHERE (Name LIKE CONCAT('%', @NP, '%'));";
+
+            command.CommandText = query;
+
+            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 50);
+            parameter.Value = dictNotesPart["name"];
+            command.Parameters.Add(parameter);
+        }
+
+
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "WoodSpecies Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Glue Collection " +
                 " retrieved successfully!");
             return mesg;
         }
@@ -68,7 +98,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving WoodSpecies Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Glue Collection " +
                 " from database!");
             return mesg;
         }
@@ -83,16 +113,16 @@ namespace FineWoodworkingBasic.Model
             if (obj == null) return false;
             if (this.GetType() != obj.GetType()) return false;
 
-            WoodSpeciesCollection other = (WoodSpeciesCollection)obj;
+            GlueCollection other = (GlueCollection)obj;
 
-            if (WoodSpeciesList.Count != other.WoodSpeciesList.Count) { return false; }
+            if (GlueList.Count != other.GlueList.Count) { return false; }
 
-            for (int cnt = 0; cnt < WoodSpeciesList.Count; cnt++)
+            for (int cnt = 0; cnt < GlueList.Count; cnt++)
             {
-                WoodSpecies nextWoodSpecies = WoodSpeciesList[cnt];
-                WoodSpecies nextOtherWoodSpecies = other.WoodSpeciesList[cnt];
+                Glue nextGlue = GlueList[cnt];
+                Glue nextOtherGlue = other.GlueList[cnt];
 
-                if (!nextWoodSpecies.Equals(nextOtherWoodSpecies)) { return false; }
+                if (!nextGlue.Equals(nextOtherGlue)) { return false; }
             }
 
             return true;
@@ -106,9 +136,9 @@ namespace FineWoodworkingBasic.Model
         public override string ToString()
         {
             string retVal = "";
-            for (int cnt = 0; cnt < WoodSpeciesList.Count; cnt++)
+            for (int cnt = 0; cnt < GlueList.Count; cnt++)
             {
-                retVal += WoodSpeciesList[cnt].ToString();
+                retVal += GlueList[cnt].ToString();
             }
 
             return retVal;

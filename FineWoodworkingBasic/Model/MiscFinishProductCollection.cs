@@ -9,17 +9,17 @@ using System.Data.SqlTypes;
 
 namespace FineWoodworkingBasic.Model
 {
-    public class MiscWoodCollection : PersistableCollection
+    public class MiscFinishProductCollection : PersistableCollection
     {
-        protected List<MiscWood> MiscWoodList;
+        protected List<MiscFinishProduct> MFPList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 
         protected PopulateQueryMethodType QueryMethod;
 
-        public MiscWoodCollection()
+        public MiscFinishProductCollection()
         {
-            MiscWoodList = new List<MiscWood>();
+            MFPList = new List<MiscFinishProduct>();
             QueryMethod = QueryConstructorAll;
         }
 
@@ -36,11 +36,11 @@ namespace FineWoodworkingBasic.Model
                 string FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 int Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
                 SqlGuid LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
-                string speciesDesc = reader.GetString(reader.GetOrdinal("SpeciesDesc"));
-                SqlGuid WoodSpeciesID = reader.GetSqlGuid(reader.GetOrdinal("SpeciesWoodID"));
-                MiscWood miscWood = new MiscWood(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, speciesDesc, WoodSpeciesID);
-                miscWood.SetLocationID(LocationID);
-                MiscWoodList.Add(miscWood);
+                string MaterialType = reader.GetString(reader.GetOrdinal("MaterialType"));
+                SqlGuid BrandID = reader.GetSqlGuid(reader.GetOrdinal("BrandID"));
+                MiscFinishProduct mfp = new MiscFinishProduct(ID, Name, Notes, FileImage1, FileImage2, FileImage3, Quantity, MaterialType, BrandID);
+                mfp.SetLocationID(LocationID);
+                MFPList.Add(mfp);
 
             }
         }
@@ -52,45 +52,45 @@ namespace FineWoodworkingBasic.Model
             PopulateHelper(d);
         }
 
-        public void PopulateViaName(string namePart)
+        public void PopulateViaName(string name)
         {
             QueryMethod = new PopulateQueryMethodType(QueryConstructorViaName);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["name"] = namePart;
+            d["name"] = name;
             PopulateHelper(d);
         }
 
-        public void PopulateViaWoodSpeciesName(string woodSpeciesNamePart)
+        public void PopulateViaBrandName(string brandName)
         {
-            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesName);
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaBrandName);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["woodSpeciesName"] = woodSpeciesNamePart;
+            d["brandName"] = brandName;
             PopulateHelper(d);
         }
 
-        public void PopulateViaWoodSpeciesID(SqlGuid woodSpeciesIDPart)
+        public void PopulateViaBrandID(SqlGuid brandID)
         {
-            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesID);
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaBrandID);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["woodSpeciesID"] = woodSpeciesIDPart;
+            d["brandID"] = brandID;
             PopulateHelper(d);
         }
 
-        public void PopulateViaWoodSpeciesDescription(string woodSpeciesDescPart)
+        public void PopulateViaMFPMaterialType(string mfpMaterialType)
         {
-            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesDescription);
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaMaterialType);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["woodSpeciesDesc"] = woodSpeciesDescPart;
+            d["mfpMaterialType"] = mfpMaterialType;
             PopulateHelper(d);
         }
 
-        public void PopulateViaWoodSpeciesNameAndDescription(string woodSpeciesNamePart, 
-            string woodSpeciesDescPart) 
+        public void PopulateViaBrandNameAndMaterialType(string brandName,
+            string mfpMaterialType)
         {
-            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaWoodSpeciesNameAndDescription);
+            QueryMethod = new PopulateQueryMethodType(QueryConstructorViaBrandNameAndMaterialType);
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["woodSpeciesName"] = woodSpeciesNamePart;
-            d["woodSpeciesDesc"] = woodSpeciesDescPart;
+            d["brandName"] = brandName;
+            d["mfpMaterialType"] = mfpMaterialType;
             PopulateHelper(d);
         }
 
@@ -101,7 +101,7 @@ namespace FineWoodworkingBasic.Model
 
         protected virtual void QueryConstructorAll(Dictionary<string, Object> dictNamePart, QC.SqlCommand command)
         {
-            string query = @"SELECT * FROM MiscWood";
+            string query = @"SELECT * FROM MiscFinishProduct";
 
             command.CommandText = query;
         }
@@ -110,7 +110,7 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM MiscWood WHERE (Name LIKE CONCAT('%', @NP, '%'));";
+            string query = @"SELECT * FROM MiscFinishProduct WHERE (Name LIKE CONCAT('%', @NP, '%'));";
 
             command.CommandText = query;
 
@@ -119,70 +119,70 @@ namespace FineWoodworkingBasic.Model
             command.Parameters.Add(parameter);
         }
 
-        protected virtual void QueryConstructorViaWoodSpeciesName(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        protected virtual void QueryConstructorViaBrandName(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM MiscWood INNER JOIN WoodSpecies ON
-                            (MiscWood.WoodSpeciesID = WoodSpecies.ID)
-                            AND (WoodSpecies.Name LIKE CONCAT('%', @WSNP, '%'));";
+            string query = @"SELECT * FROM MiscFinishProduct INNER JOIN Brand ON
+                            (MiscFinishProduct.BrandID = Brand.ID)
+                            AND (Brand.Name LIKE CONCAT('%', @BRAND, '%'));";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
-            parameter.Value = dictNotesPart["woodSpeciesName"];
+            parameter = new QC.SqlParameter("@BRAND", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["brandName"];
             command.Parameters.Add(parameter);
         }
 
-        protected virtual void QueryConstructorViaWoodSpeciesID(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        protected virtual void QueryConstructorViaBrandID(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM MiscWood WHERE SpeciesWoodID = @WSIDP;";
+            string query = @"SELECT * FROM MiscFinishProduct WHERE BrandID = @BRANDID;";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.UniqueIdentifier, 1000);  // Fix Type and Length 
-            parameter.Value = dictNotesPart["woodSpeciesID"];
+            parameter = new QC.SqlParameter("@BRANDID", DT.SqlDbType.UniqueIdentifier, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["brandID"];
             command.Parameters.Add(parameter);
         }
 
-        protected virtual void QueryConstructorViaWoodSpeciesDescription(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        protected virtual void QueryConstructorViaMaterialType(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM MiscWood WHERE (SpeciesDesc LIKE CONCAT('%', @WSDP, '%'));";
+            string query = @"SELECT * FROM MiscFinishProduct WHERE (MaterialType LIKE CONCAT('%', @MFPMT, '%'));";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSDP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
-            parameter.Value = dictNotesPart["woodSpeciesDesc"];
+            parameter = new QC.SqlParameter("@MFPMT", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["mfpMaterialType"];
             command.Parameters.Add(parameter);
         }
 
-        protected virtual void QueryConstructorViaWoodSpeciesNameAndDescription(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
+        protected virtual void QueryConstructorViaBrandNameAndMaterialType(Dictionary<string, Object> dictNotesPart, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM MiscWood INNER JOIN WoodSpecies ON
-                            (MiscWood.WoodSpeciesID = WoodSpecies.ID)
-                            AND (WoodSpecies.Name LIKE CONCAT('%', @WSNP, '%'))
-                            AND (MiscWood.SpeciesDesc LIKE CONCAT('%', @WSDP, '%'));";
+            string query = @"SELECT * FROM MiscFinishProduct INNER JOIN Brand ON
+                            (Paint.BrandID = Brand.ID)
+                            AND (Brand.Name LIKE CONCAT('%', @BRAND, '%'))
+                            AND (MiscFinishProduct.MaterialType LIKE CONCAT('%', @MFPMT, '%'));";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
-            parameter.Value = dictNotesPart["woodSpeciesName"];
+            parameter = new QC.SqlParameter("@BRAND", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["brandName"];
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@WSDP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
-            parameter.Value = dictNotesPart["woodSpeciesDesc"];
+            parameter = new QC.SqlParameter("@MFPMT", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter.Value = dictNotesPart["mfpMaterialType"];
             command.Parameters.Add(parameter);
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscFinishProduct Collection " +
                 " retrieved successfully!");
             return mesg;
         }
@@ -194,7 +194,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving MiscWood Collection " +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving MiscFinishProduct Collection " +
                 " from database!");
             return mesg;
         }
@@ -209,16 +209,16 @@ namespace FineWoodworkingBasic.Model
             if (obj == null) return false;
             if (this.GetType() != obj.GetType()) return false;
 
-            MiscWoodCollection other = (MiscWoodCollection)obj;
+            MiscFinishProductCollection other = (MiscFinishProductCollection)obj;
 
-            if (MiscWoodList.Count != other.MiscWoodList.Count) { return false; }
+            if (MFPList.Count != other.MFPList.Count) { return false; }
 
-            for (int cnt = 0; cnt < MiscWoodList.Count; cnt++)
+            for (int cnt = 0; cnt < MFPList.Count; cnt++)
             {
-                MiscWood nextMiscWood = MiscWoodList[cnt];
-                MiscWood nextOtherMiscWood = other.MiscWoodList[cnt];
+                MiscFinishProduct nextMFP = MFPList[cnt];
+                MiscFinishProduct nextOtherMFP = other.MFPList[cnt];
 
-                if (!nextMiscWood.Equals(nextOtherMiscWood)) { return false; }
+                if (!nextMFP.Equals(nextOtherMFP)) { return false; }
             }
 
             return true;
@@ -229,12 +229,13 @@ namespace FineWoodworkingBasic.Model
             throw new NotImplementedException();
         }
 
+
         public override string ToString()
         {
             string retVal = "";
-            for (int cnt = 0; cnt < MiscWoodList.Count; cnt++)
+            for (int cnt = 0; cnt < MFPList.Count; cnt++)
             {
-                retVal += MiscWoodList[cnt].ToString();
+                retVal += MFPList[cnt].ToString();
             }
 
             return retVal;

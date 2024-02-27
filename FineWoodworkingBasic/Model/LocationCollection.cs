@@ -27,9 +27,9 @@ namespace FineWoodworkingBasic.Model
             while (reader.Read())
             {
                 SqlGuid ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
-                string area = reader.GetString(reader.GetOrdinal("Area"));
-                string locus = reader.GetString(reader.GetOrdinal("Locus"));
-                LocationList.Add(new Location(ID, area, locus));
+                string Area = reader.GetString(reader.GetOrdinal("Area"));
+                string Locus = reader.GetString(reader.GetOrdinal("Locus"));
+                LocationList.Add(new Location(ID, Area, Locus));
             }
         }
 
@@ -158,6 +158,31 @@ namespace FineWoodworkingBasic.Model
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
             throw new NotSupportedException();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            LocationCollection other = (LocationCollection)obj;
+
+            if (LocationList.Count != other.LocationList.Count) { return false; }
+
+            for (int cnt = 0; cnt < LocationList.Count; cnt++)
+            {
+                Location nextLocation = LocationList[cnt];
+                Location nextOtherLocation = other.LocationList[cnt];
+
+                if (!nextLocation.Equals(nextOtherLocation)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()

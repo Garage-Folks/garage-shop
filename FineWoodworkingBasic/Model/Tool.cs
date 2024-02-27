@@ -3,39 +3,40 @@ using QC = Microsoft.Data.SqlClient;
 using FineWoodworkingBasic.Util;
 using System.Reflection.Metadata;
 using System.Data.SqlTypes;
-using MudBlazor;
+using System;
 
 namespace FineWoodworkingBasic.Model
 {
-    public class MiscWood : InventoryItem
+    public class Tool : InventoryItem
     {
-       
-        public string SpeciesDesc { get; protected set; }
+
+        public string ToolType { get; protected set; }
+
 
         // Foreign Key
-        public SqlGuid WoodSpeciesID { get; protected set; } = new SqlGuid();
-        
-        public MiscWood(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, 
-            string fileImg3, int quantity, string speciesDesc, SqlGuid woodSpeciesId) : 
+        public SqlGuid BrandID { get; protected set; } = new SqlGuid();
+
+        public Tool(SqlGuid id, string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+            int quantity, string toolType, SqlGuid brandId) :
             base(id, name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
-            SpeciesDesc = speciesDesc;
-            WoodSpeciesID = woodSpeciesId;
+            ToolType = toolType;
+            BrandID = brandId;
         }
 
-        public MiscWood(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
-            int quantity, string speciesDesc, SqlGuid woodSpeciesId) :
-            base(name, notes, fileImg1, fileImg2, fileImg3, quantity)
+        public Tool(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+            int quantity, string toolType, SqlGuid brandId) :
+            base(name, name, notes, fileImg1, fileImg2, quantity)
         {
-            SpeciesDesc = speciesDesc;
-            WoodSpeciesID = woodSpeciesId;
+            ToolType = toolType;
+            BrandID = brandId;
         }
 
         protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> dictIdToUse, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM MiscWood WHERE (ID = @Id);";
+            string query = @"SELECT * FROM Tool WHERE (ID = @Id);";
 
             command.CommandText = query;
 
@@ -50,15 +51,15 @@ namespace FineWoodworkingBasic.Model
             while (reader.Read())
             {
                 ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
-                LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
-                WoodSpeciesID = reader.GetSqlGuid(reader.GetOrdinal("SpeciesWoodID"));
                 Name = reader.GetString(reader.GetOrdinal("Name"));
-                SpeciesDesc = reader.GetString(reader.GetOrdinal("SpeciesDesc"));
+                Notes = reader.GetString(reader.GetOrdinal("Notes"));
                 FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
                 Quantity = reader.GetInt32(reader.GetOrdinal("Qty"));
-                Notes = reader.GetString(reader.GetOrdinal("Notes"));
+                LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
+                BrandID = reader.GetSqlGuid(reader.GetOrdinal("BrandID"));
+                ToolType = reader.GetString(reader.GetOrdinal("ToolType"));
             }
         }
 
@@ -75,46 +76,46 @@ namespace FineWoodworkingBasic.Model
 
             QC.SqlParameter parameter;
 
-            string insertQuery = "INSERT INTO MiscWood (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, SpeciesDesc, SpeciesWoodID) " +
+            string insertQuery = "INSERT INTO Tool (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, ToolType, BrandID) " +
                 " OUTPUT INSERTED.ID " +
-                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @SpeciesDesc, @WoodSpeciesID);";
+                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @ToolType, @BrandID);";
 
             command.CommandText = insertQuery;
 
-            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 50);
             parameter.Value = Name;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 2000);
             parameter.Value = Notes;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, int.MaxValue);
             parameter.Value = FileImage1;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, int.MaxValue);
             parameter.Value = FileImage2;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, int.MaxValue);  
             parameter.Value = FileImage3;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 5);  
             parameter.Value = Quantity;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000); 
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@SpeciesDesc", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
-            parameter.Value = SpeciesDesc;
+            parameter = new QC.SqlParameter("@ToolType", DT.SqlDbType.NVarChar, 50); 
+            parameter.Value = ToolType;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@WoodSpeciesID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
-            parameter.Value = WoodSpeciesID;
+            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter.Value = BrandID;
             command.Parameters.Add(parameter);
         }
 
@@ -122,12 +123,12 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string deleteQuery = "DELETE FROM MiscWood " +
+            string deleteQuery = "DELETE FROM Tool " +
                 " (WHERE ID = @ID)";
 
             command.CommandText = deleteQuery;
 
-            parameter = new QC.SqlParameter("@ID", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@ID", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = this.ID;
             command.Parameters.Add(parameter);
         }
@@ -141,51 +142,51 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string updateQuery = "UPDATE MiscWood" +
-               " SET Name = @Name, Notes = @Notes, LinkImg1 = @LinkImg1, " +
+            string updateQuery = "UPDATE Tool" +
+               " SET Name = @Name, Notes = @Notes, LinkImg1 = @LinkImg1," +
                " LinkImg2 = @LinkImg2, LinkImg3 = @LinkImg3, Qty = @Qty, LocationID = @LocationID," +
-               " SpeciesDesc = @SpeciesDesc, SpeciesWoodID = @WoodSpeciesID" +
+               " ToolType = @ToolType, BrandID = @BrandID " +
                " WHERE (ID = @Id);";
 
             command.CommandText = updateQuery;
 
-            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 50);
             parameter.Value = Name;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 2000);
             parameter.Value = Notes;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, int.MaxValue);
             parameter.Value = FileImage1;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, int.MaxValue);
             parameter.Value = FileImage2;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, int.MaxValue);
             parameter.Value = FileImage3;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 5);
             parameter.Value = Quantity;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000);
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@SpeciesDesc", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
-            parameter.Value = SpeciesDesc;
+            parameter = new QC.SqlParameter("@ToolType", DT.SqlDbType.NVarChar, 50);
+            parameter.Value = ToolType;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@WoodSpeciesID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
-            parameter.Value = WoodSpeciesID;
+            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter.Value = BrandID;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = ID;
             command.Parameters.Add(parameter);
         }
@@ -197,42 +198,42 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with Name: " + this.Name +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Tool with Name: " + this.Name +
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with Name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Tool with Name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving MiscWood with Name: " + this.Name +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Tool with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving MiscWood with Name: " + this.Name +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving Tool with Name: " + this.Name +
                 " into database!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "MiscWood with Name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Tool with Name: " + this.Name
                     + " deleted successfully from database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForDelete(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting MiscWood with Name: " + this.Name +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting Tool with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
@@ -242,13 +243,13 @@ namespace FineWoodworkingBasic.Model
             if (obj == null) return false;
             if (this.GetType() != obj.GetType()) return false;
 
-            MiscWood other = (MiscWood)obj;
+            Tool other = (Tool)obj;
 
             if (!base.Equals((InventoryItem)other)) return false;
 
-            if (!this.SpeciesDesc.Equals(other.SpeciesDesc)) return false;
+            if (!this.ToolType.Equals(other.ToolType)) return false;
 
-            if (!this.WoodSpeciesID.Equals(other.WoodSpeciesID)) return false;
+            if (!this.BrandID.Equals(other.BrandID)) return false;
 
             return true;
         }
@@ -260,10 +261,10 @@ namespace FineWoodworkingBasic.Model
 
         public override string ToString()
         {
-            return "\nMisc Wood\n----------\n" +
-                   $"   Name: {Name}\n" +
-                   $"   Quantity: {Quantity}\n" +
-                   $"   Species Description: {SpeciesDesc}";
+            return "\nTool\n----------\n" +
+                $"   Name: {Name}\n" +
+                $"   Quantity: {Quantity}\n" +
+                $"   ToolType: {ToolType}\n";
         }
 
     }

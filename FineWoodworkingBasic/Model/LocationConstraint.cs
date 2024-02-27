@@ -11,14 +11,8 @@ namespace FineWoodworkingBasic.Model
     public class LocationConstraint : Persistable
     {
 
-        protected SqlGuid? ID { get; set; }
-        protected string Description { get; set; }
-
-        public LocationConstraint()
-        {
-            ID = new SqlGuid();
-            Description = "";
-        }
+        public SqlGuid ID { get; protected set; } = new SqlGuid();
+        public string Description { get; protected set; } = "";
 
         public LocationConstraint(SqlGuid Id, string desc)
         {
@@ -33,9 +27,8 @@ namespace FineWoodworkingBasic.Model
 
         public void Populate(SqlGuid idToUse)
         {
-            string IDStr = idToUse + "";
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["id"] = IDStr;
+            d["id"] = idToUse;
             PopulateHelper(d);
         }
 
@@ -43,11 +36,11 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM LocationConstraint WHERE (ID = @NP);";
+            string query = @"SELECT * FROM LocationConstraint WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -57,15 +50,14 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                ID = reader.GetSqlGuid(0);
-                Description = reader.GetString(1);
+                ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
+                Description = reader.GetString(reader.GetOrdinal("Description"));
             }
         }
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -113,47 +105,56 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "LocationConstraint with ID: " + this.ID + 
-                " retrieved successfully!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "LocationConstraint retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "LocationConstraint with ID: " + this.ID
-                + " saved successfully into database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "LocationConstraint saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving LocationConstraint with ID: " + this.ID +
-                " from database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving LocationConstraint from database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving LocationConstraint with ID: " + this.ID
-                + " into database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving LocationConstraint into database!");
             return mesg;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            LocationConstraint other = (LocationConstraint)obj;
+
+            if (!this.ID.Equals(other.ID)) return false;
+
+            if (!this.Description.Equals(other.Description)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()
         {
-            return "ID: " + ID + "; Description: " + Description + " ";
+            return "\nLocationConstraint\n----------\n" +
+            $"   Description: {Description}";
         }
 
     }

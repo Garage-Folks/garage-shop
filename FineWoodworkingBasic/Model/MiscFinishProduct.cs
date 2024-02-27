@@ -1,57 +1,48 @@
-﻿using System.Data.SqlTypes;
+﻿using DT = System.Data;
 using QC = Microsoft.Data.SqlClient;
-using DT = System.Data;
-using Microsoft.Data.SqlClient;
+using FineWoodworkingBasic.Util;
+using System.Reflection.Metadata;
+using System.Data.SqlTypes;
 using System;
 
 namespace FineWoodworkingBasic.Model
 {
-    public class Oil : InventoryItem
+    public class MiscFinishProduct : InventoryItem
     {
-        public string Nature { get; protected set; } = "";
+
+        public string MaterialType { get; protected set; }
 
         // Foreign Key
         public SqlGuid BrandID { get; protected set; } = new SqlGuid();
 
-
-
-        public Oil(SqlGuid id, string name, string notes, string fileImg1, string fileImg2,
-            string fileImg3, int quantity, string nature, SqlGuid brandID) : 
+        public MiscFinishProduct(SqlGuid id, string name, string notes, string fileImg1, string fileImg2,
+            string fileImg3, int quantity, string materialtype, SqlGuid BrandId) :
             base(id, name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
-            SetNature(nature);
-            BrandID = brandID;
+            MaterialType = materialtype;
+            BrandID = BrandId;
         }
-        
-        public Oil(string name, string notes, string fileImg1, string fileImg2,
-            string fileImg3, int quantity, string nature, SqlGuid brandID) :
+
+        public MiscFinishProduct(string name, string notes, string fileImg1, string fileImg2, string fileImg3,
+            int quantity, string materialtype, SqlGuid BrandId) :
             base(name, notes, fileImg1, fileImg2, fileImg3, quantity)
         {
-            SetNature(nature);
-            BrandID = brandID;
+            MaterialType = materialtype;
+            BrandID = BrandId;
         }
 
-        private void SetNature(string nature)
-        {
-            nature = nature.ToUpper();
-
-            if (nature == "DRYING" || nature == "NON-DRYING")
-                Nature = nature;
-            else
-                throw new ArgumentException("Invalid value for Nature. Must be 'Drying' or 'Non-Drying'.");
-        }
-
-        protected override void ConstructPopulateQueryCommand(Dictionary<string, object> dictIdToUse, QC.SqlCommand command)
+        protected override void ConstructPopulateQueryCommand(Dictionary<string, Object> dictIdToUse, QC.SqlCommand command)
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Oil WHERE (ID = @Id);";
+            string query = @"SELECT * FROM MiscFinishProduct WHERE (ID = @Id);";
 
             command.CommandText = query;
 
             parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
+
         }
 
         protected override void ProcessPopulateQueryResult(QC.SqlDataReader reader)
@@ -62,7 +53,7 @@ namespace FineWoodworkingBasic.Model
                 LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
                 BrandID = reader.GetSqlGuid(reader.GetOrdinal("BrandID"));
                 Name = reader.GetString(reader.GetOrdinal("Name"));
-                Nature = reader.GetString(reader.GetOrdinal("Nature"));
+                MaterialType = reader.GetString(reader.GetOrdinal("MaterialType"));
                 FileImage1 = reader.GetString(reader.GetOrdinal("LinkImg1"));
                 FileImage2 = reader.GetString(reader.GetOrdinal("LinkImg2"));
                 FileImage3 = reader.GetString(reader.GetOrdinal("LinkImg3"));
@@ -84,9 +75,9 @@ namespace FineWoodworkingBasic.Model
 
             QC.SqlParameter parameter;
 
-            string insertQuery = "INSERT INTO Oil (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, Nature, BrandID) " +
+            string insertQuery = "INSERT INTO MiscFinishProduct (Name, Notes, LinkImg1, LinkImg2, LinkImg3, Qty, LocationID, MatertialType, BrandID) " +
                 " OUTPUT INSERTED.ID " +
-                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @Nature, @BrandID);";
+                " VALUES (@Name, @Notes, @LinkImg1, @LinkImg2, @LinkImg3, @Qty, @LocationID, @MaterialType, @BrandID);";
 
             command.CommandText = insertQuery;
 
@@ -118,6 +109,10 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
+            parameter = new QC.SqlParameter("@MaterialType", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter.Value = MaterialType;
+            command.Parameters.Add(parameter);
+
             parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
             parameter.Value = BrandID;
             command.Parameters.Add(parameter);
@@ -127,7 +122,7 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string deleteQuery = "DELETE FROM Oil " +
+            string deleteQuery = "DELETE FROM MiscFinishProduct " +
                 " (WHERE ID = @ID)";
 
             command.CommandText = deleteQuery;
@@ -146,10 +141,10 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string updateQuery = "UPDATE Oil" +
+            string updateQuery = "UPDATE MiscFinishProduct" +
                " SET Name = @Name, Notes = @Notes, LinkImg1 = @LinkImg1, " +
                " LinkImg2 = @LinkImg2, LinkImg3 = @LinkImg3, Qty = @Qty, LocationID = @LocationID," +
-               " Nature = @Nature, BrandID = @BrandID " +
+               " MaterialType = @MaterialType, BrandID = @BrandID " +
                " WHERE (ID = @Id);";
 
             command.CommandText = updateQuery;
@@ -182,8 +177,8 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Nature", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
-            parameter.Value = Nature;
+            parameter = new QC.SqlParameter("@MaterialType", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter.Value = MaterialType;
             command.Parameters.Add(parameter);
 
             parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
@@ -200,45 +195,45 @@ namespace FineWoodworkingBasic.Model
             return !this.IsPopulated();
         }
 
-        protected override ResultMessage GetErrorMessageForDelete(Exception excep)
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting Oil with Name: " + this.Name
-                    + " from the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetErrorMessageForPopulate(Exception excep)
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Oil with Name: " + this.Name
-                    + " from the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetErrorMessageForSave(Exception excep)
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving Oil with Name: " + this.Name
-                    + " into the database!");
-            return mesg;
-        }
-
-        protected override ResultMessage GetResultMessageForDelete()
-        {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
-                    + " deleted successfully from the database!");
-            return mesg;
-        }
-
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
-                    + " retrieved successfully from the database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Misc. Finished Product with Name: " + this.Name +
+                " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Oil with Name: " + this.Name
-                    + " saved successfully into the database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Misc. Finished Product with Name: " + this.Name
+                    + " saved successfully into database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Misc. Finished Product with Name: " + this.Name +
+                " from database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetErrorMessageForSave(Exception Ex)
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving Misc. Finished Product with Name: " + this.Name +
+                " into database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetResultMessageForDelete()
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Misc. Finished Product with Name: " + this.Name
+                    + " deleted successfully from database!");
+            return mesg;
+        }
+
+        protected override ResultMessage GetErrorMessageForDelete(Exception Ex)
+        {
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting Misc. Finished Product with Name: " + this.Name +
+                " from database!");
             return mesg;
         }
 
@@ -247,11 +242,11 @@ namespace FineWoodworkingBasic.Model
             if (obj == null) return false;
             if (this.GetType() != obj.GetType()) return false;
 
-            Oil other = (Oil)obj;
+            MiscFinishProduct other = (MiscFinishProduct)obj;
 
             if (!base.Equals((InventoryItem)other)) return false;
 
-            if (!this.Nature.Equals(other.Nature)) return false;
+            if (!this.MaterialType.Equals(other.MaterialType)) return false;
 
             if (!this.BrandID.Equals(other.BrandID)) return false;
 
@@ -263,13 +258,12 @@ namespace FineWoodworkingBasic.Model
             throw new NotImplementedException();
         }
 
-
         public override string ToString()
         {
-            return "\nOil\n----------\n" +
-                   $"   Name: {Name}\n" +
-                   $"   Quantity: {Quantity}\n" +
-                   $"   Nature: {Nature}";
+            return "\nMiscFinishProduct\n----------\n" +
+                $"   Name: {Name}\n" +
+                $"   Quantity: {Quantity}\n" +
+                $"   MaterialType: {MaterialType}\n";
         }
 
     }

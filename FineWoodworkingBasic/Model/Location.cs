@@ -10,16 +10,13 @@ namespace FineWoodworkingBasic.Model
     public class Location : DeletablePersistable
     {
 
-        protected SqlGuid? ID { get; set; }
-        protected string Area { get; set; }
-        protected string Locus { get; set; }
+        public SqlGuid ID { get; protected set; } = new SqlGuid();
+        public string Area { get; protected set; } = "";
+        public string Locus { get; protected set; } = "";
 
 
         public Location()
         {
-            ID = new SqlGuid();
-            Area = "";
-            Locus = "";
         }
 
         public Location(SqlGuid Id, string area, string locus)
@@ -42,9 +39,8 @@ namespace FineWoodworkingBasic.Model
         }
         public void Populate(SqlGuid idToUse)
         {
-            string IDStr = idToUse + "";
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["id"] = IDStr;
+            d["id"] = idToUse;
             PopulateHelper(d);
         }
 
@@ -52,11 +48,11 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM Location WHERE (ID = @NP);";
+            string query = @"SELECT * FROM Location WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -74,8 +70,7 @@ namespace FineWoodworkingBasic.Model
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -148,20 +143,12 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Location with ID: " + this.ID +
-                " retrieved successfully!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "Location retrieved successfully!");
             return mesg;
         }
 
@@ -175,8 +162,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Location with ID: " + this.ID +
-                " from database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving Location from database!");
             return mesg;
         }
 
@@ -204,10 +190,32 @@ namespace FineWoodworkingBasic.Model
             return mesg;
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            Location other = (Location)obj;
+
+            if (!this.ID.Equals(other.ID)) return false;
+
+            if (!this.Area.Equals(other.Area)) return false;
+
+            if (!this.Locus.Equals(other.Locus)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             return "\nLocation\n----------\n" +
-                   $"   Area: {Area}\n   Locus: {Locus}";
+                   $"   Area: {Area}\n" +
+                   $"   Locus: {Locus}";
         }
 
     }

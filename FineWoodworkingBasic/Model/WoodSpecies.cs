@@ -14,16 +14,13 @@ namespace FineWoodworkingBasic.Model
     public class WoodSpecies : DeletablePersistable
     {
 
-        protected SqlGuid? ID { get; set; }
-        protected string Name { get; set; }
-        protected string Notes { get; set; }
-       
+        public SqlGuid ID { get; protected set; } = new SqlGuid();
+        public string Name { get; protected set; } = "";
+        public string Notes { get; protected set; } = "";
+
 
         public WoodSpecies()
         {
-            ID = new SqlGuid();
-            Name = "";
-            Notes = "";
         }
 
         public WoodSpecies(SqlGuid Id, string nm, string notes)
@@ -46,9 +43,8 @@ namespace FineWoodworkingBasic.Model
         }
         public void Populate(SqlGuid idToUse)
         {
-            string IDStr = idToUse + "";
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["id"] = IDStr;
+            d["id"] = idToUse;
             PopulateHelper(d);
         }
 
@@ -56,11 +52,11 @@ namespace FineWoodworkingBasic.Model
         {
             QC.SqlParameter parameter;
 
-            string query = @"SELECT * FROM SpeciesWood WHERE (ID = @NP);";
+            string query = @"SELECT * FROM SpeciesWood WHERE (ID = @Id);";
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.UniqueIdentifier);
+            parameter = new QC.SqlParameter("@Id", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = dictIdToUse["id"];
             command.Parameters.Add(parameter);
 
@@ -70,16 +66,15 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                ID = reader.GetSqlGuid(0);
-                Name = reader.GetString(1);
-                Notes = reader.GetString(2);
+                ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
+                Name = reader.GetString(reader.GetOrdinal("Name"));
+                Notes = reader.GetString(reader.GetOrdinal("Notes"));
             }
         }
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -152,33 +147,26 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SpeciesWood with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SpeciesWood with Name: " + this.Name +
                 " retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SpeciesWood with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SpeciesWood with Name: " + this.Name
                     + " saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving SpeciesWood with ID: " + this.ID +
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving SpeciesWood with Name: " + this.Name +
                 " from database!");
             return mesg;
         }
@@ -192,7 +180,7 @@ namespace FineWoodworkingBasic.Model
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SpeciesWood with name: " + this.Name
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "SpeciesWood with Name: " + this.Name
                     + " deleted successfully from database!");
             return mesg;
         }
@@ -207,7 +195,8 @@ namespace FineWoodworkingBasic.Model
         public override string ToString()
         {
             return "\nWood Species\n----------\n" +
-                   $"   Name: {Name}\n   Notes: {Notes}";
+                   $"   Name: {Name}\n" +
+                   $"   Notes: {Notes}";
         }
 
     }

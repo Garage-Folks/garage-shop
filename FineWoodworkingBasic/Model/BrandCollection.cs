@@ -27,9 +27,9 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                SqlGuid id = reader.GetSqlGuid(0);
-                string name = reader.GetString(1);
-                string? notes = reader.GetString(2);
+                SqlGuid id = reader.GetSqlGuid(reader.GetOrdinal("ID"));
+                string name = reader.GetString(reader.GetOrdinal("Name"));
+                string notes = reader.GetString(reader.GetOrdinal("Notes"));
                 BrandList.Add(new Brand(id, name, notes));
             }
         }
@@ -85,7 +85,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNamePart["name"];
             command.Parameters.Add(parameter);
         }
@@ -99,7 +99,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 2000);  // Fix Type and Length 
             parameter.Value = dictNotesPart["notes"];
             command.Parameters.Add(parameter);
         }
@@ -111,11 +111,11 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP1", DT.SqlDbType.NVarChar, 1000);
+            parameter = new QC.SqlParameter("@NP1", DT.SqlDbType.NVarChar, 2000);
             parameter.Value = dictNotesPart["notes"];
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@NP2", DT.SqlDbType.NVarChar, 100); 
+            parameter = new QC.SqlParameter("@NP2", DT.SqlDbType.NVarChar, 50); 
             parameter.Value = dictNotesPart["name"];
             command.Parameters.Add(parameter);
         }
@@ -143,7 +143,32 @@ namespace FineWoodworkingBasic.Model
         {
             throw new NotSupportedException();
         }
-        
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            BrandCollection other = (BrandCollection)obj;
+
+            if (BrandList.Count != other.BrandList.Count) { return false; }
+
+            for (int cnt = 0; cnt < BrandList.Count; cnt++)
+            {
+                Brand nextBrand = BrandList[cnt];
+                Brand nextOtherBrand = other.BrandList[cnt];
+
+                if (!nextBrand.Equals(nextOtherBrand)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             string retVal = "";
@@ -154,12 +179,5 @@ namespace FineWoodworkingBasic.Model
 
             return retVal;
         }
-
-
     }
-
-
-
-
-
 }

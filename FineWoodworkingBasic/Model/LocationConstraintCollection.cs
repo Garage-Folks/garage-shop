@@ -27,9 +27,9 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                SqlGuid ID = reader.GetSqlGuid(0);
-                string desc = reader.GetString(1);
-                LocationConstraintList.Add(new LocationConstraint(ID, desc));
+                SqlGuid id = reader.GetSqlGuid(reader.GetOrdinal("ID"));
+                string desc = reader.GetString(reader.GetOrdinal("Description"));
+                LocationConstraintList.Add(new LocationConstraint(id, desc));
             }
         }
 
@@ -152,7 +152,32 @@ namespace FineWoodworkingBasic.Model
         {
             throw new NotSupportedException();
         }
-        
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+
+            LocationConstraintCollection other = (LocationConstraintCollection)obj;
+
+            if (LocationConstraintList.Count != other.LocationConstraintList.Count) { return false; }
+
+            for (int cnt = 0; cnt < LocationConstraintList.Count; cnt++)
+            {
+                LocationConstraint nextLocationConstraint = LocationConstraintList[cnt];
+                LocationConstraint nextOtherLocationConstraint = other.LocationConstraintList[cnt];
+
+                if (!nextLocationConstraint.Equals(nextLocationConstraint)) { return false; }
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
         public override string ToString()
         {
             string retVal = "";

@@ -11,16 +11,13 @@ namespace FineWoodworkingBasic.Model
     public class ConstraintOfLocation : DeletablePersistable
     {
 
-        protected SqlGuid? ID { get; set; }
-        protected SqlGuid? ConstraintID { get; set; }
-        protected SqlGuid? LocationID { get; set; }
+        public SqlGuid ID { get; protected set; } = new SqlGuid();
+        public SqlGuid ConstraintID { get; protected set; } = new SqlGuid();
+        public SqlGuid LocationID { get; protected set; } = new SqlGuid();
 
 
         public ConstraintOfLocation()
         {
-            ID = new SqlGuid();
-            ConstraintID = new SqlGuid();
-            LocationID = new SqlGuid();
         }
 
         public ConstraintOfLocation(SqlGuid Id, SqlGuid ConId, SqlGuid LocId)
@@ -38,11 +35,9 @@ namespace FineWoodworkingBasic.Model
 
         public void Populate(SqlGuid ConId, SqlGuid LocId)
         {
-            string ConIdStr = ConId + "";
-            string LocIdStr = LocId + "";
             Dictionary<string, Object> d = new Dictionary<string, Object>();
-            d["ConId"] = ConIdStr;
-            d["LocId"] = LocIdStr;
+            d["ConId"] = ConId;
+            d["LocId"] = LocId;
             PopulateHelper(d);
         }
 
@@ -68,16 +63,15 @@ namespace FineWoodworkingBasic.Model
         {
             while (reader.Read())
             {
-                ID = reader.GetSqlGuid(0);
-                ConstraintID = reader.GetSqlGuid(1);
-                LocationID = reader.GetSqlGuid(2);
+                ID = reader.GetSqlGuid(reader.GetOrdinal("ID"));
+                ConstraintID = reader.GetSqlGuid(reader.GetOrdinal("ConstraintID"));
+                LocationID = reader.GetSqlGuid(reader.GetOrdinal("LocationID"));
             }
         }
 
         public override bool IsPopulated()
         {
-            if (this.ID == null) return false;
-            if (this.ID.Equals(0)) return false;
+            if (this.ID.IsNull) return false;
             return true;
         }
 
@@ -129,61 +123,71 @@ namespace FineWoodworkingBasic.Model
 
         protected override bool IsNewObject()
         {
-            if (ID == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !this.IsPopulated();
         }
 
         protected override ResultMessage GetResultMessageForPopulate()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "ConstraintOfLocation with ID: " + this.ID + 
-                " retrieved successfully!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "ConstraintOfLocation retrieved successfully!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForSave()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "ConstraintOfLocation with ID: " + this.ID
-                + " saved successfully into database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "ConstraintOfLocation saved successfully into database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForPopulate(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving ConstraintOfLocation with ID: " + this.ID +
-                " from database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in retrieving ConstraintOfLocation from database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForSave(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving ConstraintOfLocation with ID: " + this.ID
-                + " into database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in saving ConstraintOfLocation into database!");
             return mesg;
         }
 
         protected override ResultMessage GetResultMessageForDelete()
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "ConstraintOfLocation with ID: " + this.ID
-                    + " deleted successfully from database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Success, "ConstraintOfLocation deleted successfully from database!");
             return mesg;
         }
 
         protected override ResultMessage GetErrorMessageForDelete(Exception Ex)
         {
-            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting ConstraintOfLocation with ID: " + this.ID +
-                " from database!");
+            ResultMessage mesg = new ResultMessage(ResultMessage.ResultMessageType.Error, "Error in deleting ConstraintOfLocation from database!");
             return mesg;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (this.GetType() != obj.GetType()) return false;
+                
+            ConstraintOfLocation other = (ConstraintOfLocation)obj;
+
+            if (!this.ID.Equals(other.ID)) return false;
+
+            if (!this.ConstraintID.Equals(other.ConstraintID)) return false;
+
+            if (!this.LocationID.Equals(other.LocationID)) return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()
         {
-            return "ID: " + ID + "; " + "ConstraintID: " + ConstraintID + "; " + "LocationID: " + LocationID + "; ";
+            return "\nConstraintOfLocation\n----------\n" +
+            $"   ConstraintID: {ConstraintID.Value}\n" +
+            $"   LocationID: {LocationID.Value}";
         }
 
     }
