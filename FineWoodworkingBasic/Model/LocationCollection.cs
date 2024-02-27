@@ -9,7 +9,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class LocationCollection : PersistableCollection
     {
-        protected List<Location> LocationList;
+        public List<Location> LocationList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 
