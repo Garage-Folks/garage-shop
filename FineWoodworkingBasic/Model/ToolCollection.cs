@@ -10,7 +10,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class ToolCollection : PersistableCollection
     {
-        protected List<Tool> ToolList;
+        public List<Tool> ToolList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 

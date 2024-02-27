@@ -11,7 +11,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class VarnishCollection : PersistableCollection
     {
-        protected List<Varnish> VarnishList;
+        public List<Varnish> VarnishList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 

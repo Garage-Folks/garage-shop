@@ -10,7 +10,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class LocationConstraintCollection : PersistableCollection
     {
-        protected List<LocationConstraint> LocationConstraintList;
+        public List<LocationConstraint> LocationConstraintList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string,Object> val, QC.SqlCommand command);
 

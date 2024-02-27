@@ -11,7 +11,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class PaintCollection : PersistableCollection
     {
-        protected List<Paint> PaintList;
+        public List<Paint> PaintList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 
