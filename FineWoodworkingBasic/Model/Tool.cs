@@ -90,15 +90,15 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = Notes;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, int.MaxValue);
+            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar);
             parameter.Value = FileImage1;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, int.MaxValue);
+            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar);
             parameter.Value = FileImage2;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, int.MaxValue);  
+            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar);
             parameter.Value = FileImage3;
             command.Parameters.Add(parameter);
 
@@ -106,7 +106,7 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = Quantity;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000); 
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier); 
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
@@ -114,7 +114,7 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = ToolType;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000);
+            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier);
             parameter.Value = BrandID;
             command.Parameters.Add(parameter);
         }

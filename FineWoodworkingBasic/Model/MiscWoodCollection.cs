@@ -114,7 +114,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNotesPart["name"];
             command.Parameters.Add(parameter);
         }
@@ -129,7 +129,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesName"];
             command.Parameters.Add(parameter);
         }
@@ -142,7 +142,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.UniqueIdentifier, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSIDP", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesID"];
             command.Parameters.Add(parameter);
         }
@@ -155,7 +155,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSDP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSDP", DT.SqlDbType.NVarChar, 2000);  // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesDesc"];
             command.Parameters.Add(parameter);
         }
@@ -171,11 +171,11 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSNP", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesName"];
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@WSDP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@WSDP", DT.SqlDbType.NVarChar, 2000);  // Fix Type and Length 
             parameter.Value = dictNotesPart["woodSpeciesDesc"];
             command.Parameters.Add(parameter);
         }

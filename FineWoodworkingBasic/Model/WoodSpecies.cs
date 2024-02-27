@@ -91,11 +91,11 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = insertQuery;
 
-            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = Name;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 2000); // Fix Type and Length  
             parameter.Value = Notes;
             command.Parameters.Add(parameter);
 
@@ -130,11 +130,11 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = updateQuery;
 
-            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = Name;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 2000); // Fix Type and Length  
             parameter.Value = Notes;
             command.Parameters.Add(parameter);
 

@@ -113,7 +113,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@NP", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNotesPart["name"];
             command.Parameters.Add(parameter);
         }
@@ -128,7 +128,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@BRAND", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@BRAND", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNotesPart["brandName"];
             command.Parameters.Add(parameter);
         }
@@ -141,7 +141,7 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@BRANDID", DT.SqlDbType.UniqueIdentifier, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@BRANDID", DT.SqlDbType.UniqueIdentifier);  // Fix Type and Length 
             parameter.Value = dictNotesPart["brandID"];
             command.Parameters.Add(parameter);
         }
@@ -153,7 +153,7 @@ namespace FineWoodworkingBasic.Model
             string query = @"SELECT * FROM Oil WHERE (Nature LIKE CONCAT('%', @NATURE, '%'));";
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@NATURE", DT.SqlDbType.NVarChar, 1000);
+            parameter = new QC.SqlParameter("@NATURE", DT.SqlDbType.NVarChar, 10);
             parameter.Value = dictNotesPart["oilNature"];
             command.Parameters.Add(parameter);
         }
@@ -169,11 +169,11 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = query;
 
-            parameter = new QC.SqlParameter("@BRAND", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@BRAND", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = dictNotesPart["brandName"];
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@NATURE", DT.SqlDbType.NVarChar, 1000);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@NATURE", DT.SqlDbType.NVarChar, 10);  // Fix Type and Length 
             parameter.Value = dictNotesPart["oilNature"];
             command.Parameters.Add(parameter);
         }

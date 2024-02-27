@@ -81,39 +81,39 @@ namespace FineWoodworkingBasic.Model
 
             command.CommandText = insertQuery;
 
-            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 100);  // Fix Type and Length 
+            parameter = new QC.SqlParameter("@Name", DT.SqlDbType.NVarChar, 50);  // Fix Type and Length 
             parameter.Value = Name;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Notes", DT.SqlDbType.NVarChar, 2000); // Fix Type and Length  
             parameter.Value = Notes;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg1", DT.SqlDbType.NVarChar); // Fix Type and Length  
             parameter.Value = FileImage1;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg2", DT.SqlDbType.NVarChar); // Fix Type and Length  
             parameter.Value = FileImage2;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LinkImg3", DT.SqlDbType.NVarChar); // Fix Type and Length  
             parameter.Value = FileImage3;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@Qty", DT.SqlDbType.Int, 5); // Fix Type and Length  
             parameter.Value = Quantity;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@LocationID", DT.SqlDbType.UniqueIdentifier); // Fix Type and Length  
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@MaterialType", DT.SqlDbType.NVarChar, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@MaterialType", DT.SqlDbType.NVarChar, 50); // Fix Type and Length  
             parameter.Value = MaterialType;
             command.Parameters.Add(parameter);
 
-            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier, 1000); // Fix Type and Length  
+            parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier); // Fix Type and Length  
             parameter.Value = BrandID;
             command.Parameters.Add(parameter);
         }
