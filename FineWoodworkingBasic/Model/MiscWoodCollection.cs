@@ -11,7 +11,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class MiscWoodCollection : PersistableCollection
     {
-        protected List<MiscWood> MiscWoodList;
+        public List<MiscWood> MiscWoodList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 

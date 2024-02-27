@@ -11,7 +11,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class LogCollection : PersistableCollection
     {
-        protected List<Log> LogList;
+        public List<Log> LogList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 

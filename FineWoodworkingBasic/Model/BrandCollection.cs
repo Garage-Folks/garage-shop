@@ -10,7 +10,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class BrandCollection : PersistableCollection
     {
-        protected List<Brand> BrandList;
+        public List<Brand> BrandList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string,Object> val, QC.SqlCommand command);
 

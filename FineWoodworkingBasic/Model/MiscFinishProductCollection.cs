@@ -11,7 +11,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class MiscFinishProductCollection : PersistableCollection
     {
-        protected List<MiscFinishProduct> MFPList;
+        public List<MiscFinishProduct> MFPList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 

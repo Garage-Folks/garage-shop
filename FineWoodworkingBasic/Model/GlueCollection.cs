@@ -10,7 +10,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class GlueCollection : PersistableCollection
     {
-        protected List<Glue> GlueList;
+        public List<Glue> GlueList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 

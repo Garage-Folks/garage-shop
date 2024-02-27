@@ -12,7 +12,7 @@ namespace FineWoodworkingBasic.Model
 {
     public class LumberCollection : PersistableCollection
     {
-        protected List<Lumber> LumberList;
+        public List<Lumber> LumberList;
 
         protected delegate void PopulateQueryMethodType(Dictionary<string, Object> val, QC.SqlCommand command);
 
