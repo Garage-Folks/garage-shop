@@ -1,67 +1,60 @@
 ﻿@page "/addBrand"
+@*Imports*@
 @using FineWoodworkingBasic.Service
 @using FineWoodworkingBasic.Model
 @using System.ComponentModel.DataAnnotations
+@*Dependencies*@
 @inject AddBrandService svc
 @inject AllStateInfoService FullState
 
-<PageTitle>Add a Brand</PageTitle>
 
-
-@*
-<h1>Please Enter a New Brand</h1>
-
-<div class="form-group row">
-    <label 
-        for="brandName" 
-        class="col-sm-2 col-form-label">
-        Brand Name
-        </label>
-    <div class="col-sm-10">
-        <input 
-            type="text" 
-            id="brandName" 
-            class="form-control" 
-            placeholder="Brand Name" 
-            @bind="@bName" 
-            @oninput="SetBName" />
-    </div>
-</div>
-<div class="form-group row">
-    <label for="brandNotes" class="col-sm-2 col-form-label">Brand Notes</label>
-    <div class="col-sm-10">
-        <input type="text" id="brandNotes" class="form-control" placeholder="Brand Notes" @bind="@bNotes" @oninput="SetBNotes" />
-    </div>
-</div>
-
-<button class="btn btn-primary" @onclick="AddBrandAction">Add Brand</button>
-<div class="@CssClass">
-    <p role="status">Status: @addBrandMessage </p>
-</div>
-*@
-
-<EditForm Model="model" OnValidSubmit="OnValidSubmit" >
+@*Form for Adding a Brand*@
+<EditForm Model="model" OnValidSubmit="OnValidSubmit">
 <DataAnnotationsValidator/>
     <MudCard>
+
+        @*Form Contents*@
         <MudCardContent>
-            <MudTextField T="string" Label="Brand name" Counter="50" Immediate="true" Variant="Variant.Text"
+            <MudText Align="Align.Center" Typo="Typo.h5" >Add a Brand</MudText>
+            <MudDivider DividerType="DividerType.Middle" Light="true" />
+            <br />
+
+            <MudTextField T="string" Label="Brand name"  Clearable="true" Counter="50" Immediate="true" Variant="Variant.Text"
                 @bind-Value="model.Name" Validation="@(new Func<string, IEnumerable<string>>(MaxFiftyCharacters))"/>
-            <MudTextField T="string" Label="Notes" Counter="2000" Immediate="true" Variant="Variant.Text" Lines="3"
-                @bind-Value="model.Notes" Validation="@(new Func<string, IEnumerable<string>>(MaxTwoThouCharacters))"/>       
+            <MudTextField T="string" Label="Notes" Clearable="true" Counter="2000" Immediate="true" Variant="Variant.Text" AutoGrow="true"
+                @bind-Value="model.Notes" Validation="@(new Func<string, IEnumerable<string>>(MaxTwoThouCharacters))"/>
+                    
         </MudCardContent>
+
+        @*Form Action Bar*@
         <MudCardActions>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">
+            @*Clear Button*@
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="ClearAll"
+            Class="mr-3 ml-2">
+                @if (spin)
+                {
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>Clear</MudText>
+                }
+            </MudButton>
+
+            @*Submit Button with loading *@
+            <MudButton ButtonType="ButtonType.Submit" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
             @if (spin)
             {
                 <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
             }
             else
             {
-                <MudText>Add new Brand</MudText>
+                <MudText>Add</MudText>
             }
             </MudButton>
         </MudCardActions>
     </MudCard>
 </EditForm>
 
-<MudText>@addBrandMessage</MudText>
+@*Status Message*@
+<MudText Color="msgColor">@addBrandMessage</MudText>
