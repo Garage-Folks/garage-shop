@@ -20,6 +20,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 // Register the login service
 builder.Services.AddSingleton<AddBrandService>();
+builder.Services.AddSingleton<AddTemplateService>();
 // Add the AppState class
 builder.Services.AddScoped<AllStateInfoService>();
 builder.Services.AddMudServices();
