@@ -6,12 +6,12 @@ using MudBlazor;
 
 namespace FineWoodworkingBasic.Pages.Private
 {
-    #region AddBrandPage Class
-    partial class AddBrandPage : ComponentBase
+    #region AddLocationConstraintPage Class
+    partial class AddLocationConstraintPage : ComponentBase
     {
         // Parameter with helper variables to maintain a modified and unmodified state of the form.
-        public AddBrandForm model = new AddBrandForm();
-        private string addBrandMessage { get; set; }
+        public AddLocationConstraintForm model = new AddLocationConstraintForm();
+        private string addLocationConstraintMessage { get; set; }
 
         Color msgColor = Color.Error;
         bool spin;
@@ -24,11 +24,11 @@ namespace FineWoodworkingBasic.Pages.Private
         {
             spin = true;
 
-            ResultMessage mesg = await svc.AddBrandAsync(model.Name, model.Notes);
+            ResultMessage mesg = await svc.AddLocationConstraintAsync(model.Description);
 
-            addBrandMessage = mesg.Message;
+            addLocationConstraintMessage = mesg.Message;
             string _compare = "success";
-            if (addBrandMessage.Contains(_compare))
+            if (addLocationConstraintMessage.Contains(_compare))
             {
                 msgColor = Color.Success;
             }
@@ -42,39 +42,29 @@ namespace FineWoodworkingBasic.Pages.Private
         /// </summary>
         private void ClearAll()
         {
-            model.Name = string.Empty;
-            model.Notes = string.Empty;
-            addBrandMessage = string.Empty;
+            model.Description = string.Empty;
+            addLocationConstraintMessage = string.Empty;
             StateHasChanged();
         }
 
         #region Error Messages (Validation Tag)
-        private IEnumerable<string> MaxFiftyCharacters(string ch)
-        {
-            if (!string.IsNullOrEmpty(ch) && 50 < ch?.Length)
-                yield return "Max 50 characters";
-        }
 
         private IEnumerable<string> MaxTwoThouCharacters(string ch)
         {
             if (!string.IsNullOrEmpty(ch) && 2000 < ch?.Length)
-                yield return "Max 2000 characters";
+                yield return "Max 25 characters";
         }
         #endregion
 
     }
     #endregion
 
-    #region AddBrandForm Class
-    public class AddBrandForm
+    #region AddLocationConstraintForm Class
+    public class AddLocationConstraintForm
     {
-        [Required]
-        [StringLength(50, ErrorMessage = "Name length can't be greater than 50 characters.")]
-        public string Name { get; set; }
-
-        [Required]
-        [StringLength(2000, ErrorMessage = "Notes length can't be greater than 2000 characters.")]
-        public string Notes { get; set; }
+        [Required(ErrorMessage = "Description field must have a value.")]
+        [StringLength(2000, ErrorMessage = "Description length can't be more than 2000.")]
+        public string Description { get; set; }
     }
-    #endregion
 }
+    #endregion

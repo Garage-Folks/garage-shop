@@ -3,18 +3,16 @@ namespace FineWoodworkingBasic.Service
 {
     public class AddLocationConstraintService
     {
-        public Task<String> AddLocationConstraintAsync(string description)
+        public async Task<ResultMessage> AddLocationConstraintAsync(string description)
         {
-            return Task.FromResult(AddLocationConstraintAsyncHelper(description));
+            return await Task.FromResult(AddLocationConstraintAsyncHelper(description));
         }
 
-        private String AddLocationConstraintAsyncHelper(string description)
+        private ResultMessage AddLocationConstraintAsyncHelper(string description)
         {
             LocationConstraint lc = new LocationConstraint(description);
             lc.Save();
-            ResultMessage msg = lc.RetrieveSaveMessage();
-            String retVal = msg.Message;
-            return retVal;
+            return lc.RetrieveSaveMessage();
         }
 
     }

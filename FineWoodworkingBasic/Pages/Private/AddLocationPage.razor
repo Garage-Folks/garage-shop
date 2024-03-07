@@ -5,88 +5,52 @@
 @inject AddLocationService svc
 @inject AllStateInfoService FullState
 
+
 <PageTitle>Add Location</PageTitle>
-<h1>Add a new Location</h1>
-<EditForm Model="@model">
-    <MudCard @ontouchenter="AddLocation">
-        <MudStack>
-            <MudCardContent>
-                <MudSelect T="string?" @bind-Value="Area" Variant="Variant.Outlined" Label="Area" AnchorOrigin="Origin.BottomCenter" @onchange="SetArea" Required="true">
-                    @foreach (Location location in PopulateAreaList())
-                    {
-                        <MudSelectItem Value="location.Area">@location.Area</MudSelectItem>
-                     
-                    }
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<DataAnnotationsValidator/>
+    <MudCard>
+        <MudCardContent>
+            <MudText Align="Align.Center" Typo="Typo.h5">Add a Location</MudText>
+            <MudDivider DividerType="DividerType.Middle" Light="true" />
+            <br />
 
-                </MudSelect>
-                <MudTextField @bind-Value="Area" Label="Area" Variant="Variant.Outlined"></MudTextField>
-            </MudCardContent>
-            <MudSpacer/>
-            <MudCardContent>
-                @*<MudSelect T="string?" @bind-Value="Locus" Variant="Variant.Outlined" Label="Locus" AnchorOrigin="Origin.BottomCenter" @onchange="SetLocus">
-                    @foreach (Location location in locusViaAreaList)
-                    {
-                        <MudSelectItem Value="@location.Locus" />
-                    }
+            <MudAutocomplete T="string" @bind-Value="model.Area" Clearable="true" Counter="10" Immediate="true" Variant="Variant.Text" Label="Area" AnchorOrigin="Origin.BottomCenter"
+                             CoerceText="false" CoerceValue="true" SearchFunc="@Search1" For="@(() => model.Area)" Validation="@(new Func<string, IEnumerable<string>>(MaxTenCharacters))"/>
 
-                </MudSelect>*@
-                <MudTextField @bind-Value="Locus" Label="Locus" Variant="Variant.Outlined"></MudTextField>
-            </MudCardContent>
-            <MudStack Row="true">
-                <MudButton Class="pa-3" @onclick="AddLocation" @ontouchenter="AddLocation">Add Location</MudButton>
-                <MudButton Class="pa-3">Cancel</MudButton>
-            </MudStack>
-        </MudStack>
+            <MudTextField T="string" Label="Locus" Clearable="true" Counter="25" Immediate="true" Variant="Variant.Text" AutoGrow="true"
+                          @bind-Value="model.Locus" Validation="@(new Func<string, IEnumerable<string>>(MaxTwentyFiveCharacters))" />
+
+        </MudCardContent>
+
+        <MudCardActions>
+            @*Clear Button*@
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="ClearAll"
+            Class="mr-3 ml-2">
+                @if (spin)
+                {
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>Clear</MudText>
+                }
+            </MudButton>
+
+            @*Submit Button with loading *@
+            <MudButton ButtonType="ButtonType.Submit" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+            @if (spin)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            }
+            else
+            {
+                <MudText>Add</MudText>
+            }
+            </MudButton>
+        </MudCardActions>
     </MudCard>
 </EditForm>
 
-<p role="status">Status: @addLocationMessage</p>
-
-@code {
-    Location location = new Location();
-    List<Location> locusViaAreaList = new List<Location>();
-
-    private string addLocationMessage { get; set; }
-    private string Area { get; set; }
-    private string Locus { get; set; }
-
-    AddLocationForm model = new AddLocationForm();
-
-    private void SetArea(ChangeEventArgs changeEvent)
-    {
-        Area = (string)changeEvent.Value;
-    }
-
-    private void SetLocus(ChangeEventArgs changeEvent)
-    {
-        Locus = (string)changeEvent.Value;
-    }
-
-    private List<Location> PopulateAreaList()
-    {
-        LocationCollection allLocationCollection = new LocationCollection();
-        allLocationCollection.PopulateAll();
-        List<Location> areaList = allLocationCollection.LocationList;
-        return areaList;
-    }
-    private void PopulateLocusListViaArea()
-    {
-        LocationCollection areaLocationCollection = new LocationCollection();
-        areaLocationCollection.PopulateViaArea(Area);
-        locusViaAreaList = areaLocationCollection.LocationList;
-    }
-    private async void AddLocation()
-    {
-        ResultMessage retMsg = await svc.AddLocationAsync(Area, Locus);
-        addLocationMessage = retMsg.Message;
-    }
-    public class AddLocationForm
-    {
-        [Required]
-        [StringLength(10, ErrorMessage = "Area length can't be more than 10.")]
-        public string FormArea { get; set; }
-        [Required]
-        [StringLength(25, ErrorMessage = "Locus length can't be more than 25.")]
-        public string FormLocus { get; set; }
-    }
-}
+@*Status Message*@
+<MudText Color="msgColor">@addLocationMessage</MudText>

@@ -6,101 +6,69 @@
 @inject AllStateInfoService FullState
 
 <PageTitle>Add Lumber</PageTitle>
-<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <MudCard>
-        <MudCardHeader>Add Lumber</MudCardHeader>
-        <MudStack>
+        <MudPaper>
             <MudCardContent>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudTextField @bind-Value="model.Name" Label="Name" Variant="Variant.Outlined" For="@(() => model.Name)"></MudTextField>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudAutocomplete T="string" @bind-Value="model.WoodSpecies" Variant="Variant.Outlined" Label="Wood Species" AnchorOrigin="Origin.BottomCenter"
-                                      SearchFunc="@SearchLumber" For="@(() => model.WoodSpecies)" MaxItems="@woodSpeciesCollectionSize" />
-                </MudItem>
-                <MudItem xs="12" sm="6" md="4">
-                    <MudNumericField @bind-Value="model.Quantity" Label="Quantity" Variant="Variant.Outlined" Min="1" MaxLength="5"/>
-                </MudItem>
+                <MudText Align="Align.Center" Typo="Typo.h5">Add Lumber</MudText>
+                <MudDivider DividerType="DividerType.Middle" Light="true" />
+                <br />
+
+                <MudTextField T="string" Label="Lumber Name" Clearable="true" Counter="50" Immediate="true" Variant="Variant.Text" AutoGrow="true"
+                              @bind-Value="model.Name" Validation="@(new Func<string, IEnumerable<string>>(MaxFiftyCharacters))" />
+
+                <MudAutocomplete T="string" @bind-Value="model.WoodSpeciesName" Variant="Variant.Text" Label="Wood Species" AnchorOrigin="Origin.BottomCenter"
+                                 SearchFunc="@SearchLumber" For="@(() => model.WoodSpeciesName)" MaxItems="@woodSpeciesCollectionSize" />
+
                 <MudStack Row="true">
-                    <MudNumericField @bind-Value="model.Length" Label="Length" Variant="Variant.Outlined" Min="0" MaxLength="7"/>
-                    <MudNumericField @bind-Value="model.Width" Label="Width" Variant="Variant.Outlined" Min="0" MaxLength="7" />
-                    <MudNumericField @bind-Value="model.Thickness" Label="Thickness" Variant="Variant.Outlined" Min="0" MaxLength="7" />
+                    <MudNumericField @bind-Value="model.Length" Clearable="true" Label="Length" Variant="Variant.Text" Min="0" MaxLength="7" />
+                    <MudNumericField @bind-Value="model.Width" Label="Width" Clearable="true" Variant="Variant.Text" Min="0" MaxLength="7" />
+                    <MudNumericField @bind-Value="model.Thickness" Label="Thickness" Clearable="true" Variant="Variant.Text" Min="0" MaxLength="7" />
                 </MudStack>
-                <MudItem>
-                    <MudTextField FullWidth="false" Immediate="true" @bind-Value="model.Notes"Label="Notes" Variant="Variant.Outlined" For="@(() => model.Notes)" Counter="2000" Lines="3" ></MudTextField>
-                </MudItem>
+
+                <MudTextField T="string" Label="Notes" Clearable="true" Counter="2000" Immediate="true" Variant="Variant.Text"
+                              @bind-Value="model.Notes" Validation="@(new Func<string, IEnumerable<string>>(MaxTwoThouCharacters))" />
+
+                <MudNumericField @bind-Value="model.Quantity" Label="Quantity" Variant="Variant.Text" Min="1" MaxLength="5" />
+
+
             </MudCardContent>
-            <MudText>Status: @addLumberMessage</MudText>
-            <MudStack Row="true" Style="">
-                <MudButton ButtonType="ButtonType.Submit" Class=" pa-3">Add Lumber</MudButton>
-                <MudButton Class="pa-3" @onclick="Clear">Clear</MudButton>
-            </MudStack>
-        </MudStack>
+        </MudPaper>
+        <MudCard>
+            <header>Location Info</header>
+            <MudCardContent>
+                <MudAutocomplete T="string" @bind-Value="model.Area" Clearable="true" Counter="10" Immediate="true" Variant="Variant.Text" Label="Area" AnchorOrigin="Origin.BottomCenter"
+                                 CoerceText="true" CoerceValue="false" SearchFunc="@SearchArea" For="@(() => model.Area)" />
+                <MudAutocomplete T="string" @bind-Value="model.Locus" Clearable="true" Counter="10" Immediate="true" Variant="Variant.Text" Label="Locus" AnchorOrigin="Origin.BottomCenter"
+                                 CoerceText="true" CoerceValue="false" SearchFunc="@SearchLocus" For="@(() => model.Locus)" />
+            </MudCardContent>
+        </MudCard>
+        <MudCardActions>
+            @*Clear Button*@
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="ClearAll"
+                       Class="mr-3 ml-2">
+                @if (spin)
+                {
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>Clear</MudText>
+                }
+            </MudButton>
+
+            @*Submit Button with loading *@
+            <MudButton ButtonType="ButtonType.Submit" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+                @if (spin)
+                {
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>Add</MudText>
+                }
+            </MudButton>
+        </MudCardActions>
     </MudCard>
 </EditForm>
-
-@code {
-    AddLumberForm model = new AddLumberForm();
-    List<WoodSpecies> SpeciesList = new List<WoodSpecies>();
-    private string addLumberMessage { get; set; }
-    private int woodSpeciesCollectionSize { get; set; }
-
-    protected override Task OnInitializedAsync()
-    {
-
-        model.Quantity = 1;
-        SpeciesList = PopulateSpeciesList();
-        woodSpeciesCollectionSize = SpeciesList.Count();
-        return base.OnInitializedAsync();
-    }
-    private List<WoodSpecies> PopulateSpeciesList()
-    {
-        WoodSpeciesCollection AllWoodSpecies = new WoodSpeciesCollection();
-        AllWoodSpecies.PopulateAll();
-        return AllWoodSpecies.WoodSpeciesList;
-    }
-    public class AddLumberForm
-    {
-        [Required(ErrorMessage = "The Name field must have a value.")]
-        [StringLength(50, ErrorMessage = "Name length can't be more than 50.")]
-        public string Name { get; set; }
-        [Required(ErrorMessage = "The Notes field must have a value.")]
-        [StringLength(2000, ErrorMessage = "Notes length can't be more than 2000.")]
-        public string Notes { get; set; }
-        [Required(ErrorMessage = "The Quantity field must have a value.")]
-        public int Quantity { get; set; }
-        [Required(ErrorMessage = "The Length field must have a value.")]
-        public double Length { get; set; }
-        [Required(ErrorMessage = "The Width field must have a value.")]
-        public double Width { get; set; }
-        [Required(ErrorMessage = "The Thinkness field must have a value.")]
-        public double Thickness { get; set; }
-        [Required(ErrorMessage = "The Wood Species field must have a value.")]
-        public string WoodSpecies { get; set; }
-    }
-    private async Task<IEnumerable<string>> SearchLumber(string value)
-    {
-
-
-        await OnInitializedAsync();
-        return SpeciesList.Select(x => x.Name);
-    }
-    private async void OnValidSubmit(EditContext context)
-    {
-        ResultMessage retMsg = await svc.AddLumberAsync(model.Name, model.Notes);
-        addLumberMessage = retMsg.Message;
-        StateHasChanged();
-        Clear();
-    }
-    private void Clear()
-    {
-        model.Name = "";
-        model.Notes = "";
-        model.Quantity = 1;
-        model.Width = 0;
-        model.Length = 0;
-        model.Thickness = 0;
-        model.WoodSpecies = "";
-    }
-}

@@ -6,24 +6,51 @@
 @inject AllStateInfoService FullState
 
 <PageTitle>Add Location Constraint</PageTitle>
-<h1>Add a new Location Constraint</h1>
-<EditForm Model="@model">
+<EditForm Model="model" OnValidSubmit="OnValidSubmit">
+<DataAnnotationsValidator/>
     <MudCard>
-        <MudStack>
-            <MudCardContent>
-                <MudTextField @bind-Value="Description" Label="Description" Variant="Variant.Outlined" AutoGrow></MudTextField>
-            </MudCardContent>
-            <MudSpacer />
-            <MudStack Row="true">
-                <MudButton Class="pa-3" @onclick="AddLocationConstraint" @ontouchenter="AddLocationConstraint">Add Location Constraint</MudButton>
-                <MudButton Class="pa-3" @onclick="Cancel">Cancel</MudButton>
-            </MudStack>
-        </MudStack>
+        <MudCardContent>
+            <MudText Align="Align.Center" Typo="Typo.h5">Add a Location Constraint</MudText>
+            <MudDivider DividerType="DividerType.Middle" Light="true" />
+            <br />
+
+            <MudTextField T="string" Label="Description" Clearable="true" Counter="2000" Immediate="true" Variant="Variant.Text"
+                          @bind-Value="model.Description" Validation="@(new Func<string, IEnumerable<string>>(MaxTwoThouCharacters))" />
+            
+        </MudCardContent>
+
+        <MudCardActions>
+            @*Clear Button*@
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" OnClick="ClearAll"
+                       Class="mr-3 ml-2">
+                @if (spin)
+                {
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>Clear</MudText>
+                }
+            </MudButton>
+
+            @*Submit Button with loading *@
+            <MudButton ButtonType="ButtonType.Submit" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+                @if (spin)
+                {
+                    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+                }
+                else
+                {
+                    <MudText>Add</MudText>
+                }
+            </MudButton>
+        </MudCardActions>
     </MudCard>
 </EditForm>
+@*Status Message*@
+<MudText Color="msgColor">@addLocationConstraintMessage</MudText>
 
-<p role="status">Status: @addLocationConstraintMessage</p>
-
+@*
 @code {
     Location location = new Location();
     List<Location> locusViaAreaList = new List<Location>();
@@ -33,23 +60,24 @@
 
     AddLocationConstraintForm model = new AddLocationConstraintForm();
 
-    private void SetDescription(ChangeEventArgs changeEvent)
+
+    private async void OnValidSubmit(EditContext context)
     {
-        Description = (string)changeEvent.Value;
+        ResultMessage retMsg = await svc.AddLocationConstraintAsync(model.FormDescription);
+        addLocationConstraintMessage = retMsg.Message;
+        StateHasChanged();
+        Clear();
+
     }
 
-    private async void AddLocationConstraint()
+    public void Clear()
     {
-        String retMsg = await svc.AddLocationConstraintAsync(Description);
-        addLocationConstraintMessage = retMsg;
-    }
-    public void Cancel()
-    {
+        model.FormDescription = "";
     }
     public class AddLocationConstraintForm
     {
-        [Required]
+        [Required(ErrorMessage = "Description field must have a value.")]
         [StringLength(2000, ErrorMessage = "Description length can't be more than 2000.")]
-        public string Description { get; set; }
+        public string FormDescription { get; set; }
     }
-}
+}*@
