@@ -118,6 +118,10 @@ namespace FineWoodworkingBasic.Model
             parameter.Value = LocationID;
             command.Parameters.Add(parameter);
 
+            parameter = new QC.SqlParameter("@Nature", DT.SqlDbType.NVarChar, 10); // Fix Type and Length  
+            parameter.Value = Nature;
+            command.Parameters.Add(parameter);
+
             parameter = new QC.SqlParameter("@BrandID", DT.SqlDbType.UniqueIdentifier); // Fix Type and Length  
             parameter.Value = BrandID;
             command.Parameters.Add(parameter);

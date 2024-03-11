@@ -99,7 +99,7 @@ CREATE TABLE Oil (
     LinkImg2 nVARCHAR(MAX) NOT NULL DEFAULT '',
     LinkImg3 nVARCHAR(MAX) NOT NULL DEFAULT '',
     BrandID uniqueidentifier,
-    Dry VARCHAR(10) NOT NULL,
+    Nature VARCHAR(10) NOT NULL,
     FOREIGN KEY (LocationID) REFERENCES Location(ID),
     FOREIGN KEY (BrandID) REFERENCES Brand(ID)
 );
