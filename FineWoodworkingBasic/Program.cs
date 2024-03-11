@@ -18,9 +18,8 @@ Utilities.EstablishConnection("dbConfig.ini");
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-// Register the login service
 builder.Services.AddSingleton<AddBrandService>();
-builder.Services.AddSingleton<AddTemplateService>();
+builder.Services.AddSingleton<AddService>();
 // Add the AppState class
 builder.Services.AddScoped<AllStateInfoService>();
 builder.Services.AddMudServices();
