@@ -2,14 +2,14 @@
 using FineWoodworkingBasic.Model;
 namespace FineWoodworkingBasic.Service
 {
-    public class AddService
+    public class PersistService
     {
-        public async Task<ResultMessage> AddAsync(string model, object[] attributes)
+        public async Task<ResultMessage> PersistAsync(string model, object[] attributes)
         {
-            return await Task.FromResult(AddAsyncHelper(model, attributes));
+            return await Task.FromResult(PersistAsyncHelper(model, attributes));
         }
 
-        private ResultMessage AddAsyncHelper(string model, object[] attributes)
+        private ResultMessage PersistAsyncHelper(string model, object[] attributes)
         {
             Type? modelType = Type.GetType("FineWoodworkingBasic.Model." + model);
             if (modelType == null) return new ResultMessage(ResultMessage.ResultMessageType.Error, "No model found matching: " + model);
